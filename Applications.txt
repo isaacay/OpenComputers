@@ -92,7 +92,7 @@
   },
   {
     ["name"]="MineOS/Pictures/Luna.pic",
-    ["url"]="IgorTimofeev/OpenComputers/master/MineOS/Wallpapers/Luna.pic",
+    ["url"]="isaacay/OpenComputers/master/MineOS/Wallpapers/Luna.pic",
     ["type"]="Wallpaper",
     ["version"]=1.0,
   },
