@@ -7,12 +7,12 @@ local EEPROMLabel = "EEPROM (Lua BIOS)"
 local EEPROMCode = [[
 
 local textLines = {
-  "Поздравляем!",
-  "Вы стали одним из первых счастливых обладателей вируса на OpenComputers.",
-  "Попытайтесь его удалить - посмотрим, что у вас выйдет. ",
-  "Ну, а нубикам советую обращаться к ECS для разблокировки компа.",
-  " ",
-  "Хех)",
+  "Congratulations!"
+   "You were one of the first lucky owners of the virus on OpenComputers.",
+   "Try to remove it - see what you will."
+   "Well, I advise you to contact blackdominion to unlock the computer."
+   ""
+   "Heh)"
 }
 
 local component_invoke = component.invoke
@@ -289,12 +289,12 @@ if args[1] == "flashEEPROM" then
   flashEEPROM()
 else
   print(" ")
-  print("Перепрошиваю BIOS...")
+  print("reflash BIOS...")
   flashEEPROM()
-  print("Перезаписываю кастомный init.lua...")
+  print("overwrites custom init.lua...")
   rewriteInit()
   print(" ")
-  print("Вирус успешно установлен!")
+  print("The virus has been successfully installed!")
   print(" ")
 end
 

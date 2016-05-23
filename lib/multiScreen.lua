@@ -1,3 +1,4 @@
+--translation skipped on line 130 and 133
 local ecs = require("ECSAPI")
 local components = require("component")
 local serialization = require("serialization")
@@ -40,11 +41,11 @@ local function configurator()
 	
 	ecs.setScale(0.7)
 
-	local data = ecs.universalWindow("auto", "auto", 40, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Здорово, ебана!"}, {"EmptyLine"}, {"WrappedText", 0x262626, "Добро пожаловать в программу конфигурации мультимонитора. Вам необходимо указать количество мониторов по ширине и высоте, которые вы желаете объединить, а также выбрать желаемый масштаб."}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Ширина"}, {"Input", 0x262626, 0x880000, "Высота"},  {"Slider", 0x262626, 0x880000, 1, 100, 100, "Масштаб: ", "%"}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "Подтвердить"}, {0x777777, 0xffffff, "Отмена"}})
+	local data = ecs.universalWindow("auto", "auto", 40, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Wow, ebana!"}, {"EmptyLine"}, {"WrappedText", 0x262626, "Welcome to the multi-monitor configuration. You need to specify the number of monitors on the width and height that you want to merge, and select the desired scale."}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Width"}, {"Input", 0x262626, 0x880000, "Height"},  {"Slider", 0x262626, 0x880000, 1, 100, 100, "Scale: ", "%"}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "confirm"}, {0x777777, 0xffffff, "cancellation"}})
 	local width, height, scale = tonumber(data[1]), tonumber(data[2]), tonumber(data[3]) / 100
-	if data[4] == "Отмена" then
+	if data[4] == "cancellation" then
 		ecs.prepareToExit()
-		print("Калибровка отменена!")
+		print("Calibration is canceled!")
 		os.exit()
 	end
 
@@ -55,10 +56,10 @@ local function configurator()
 	local countOfConnectedScreens = #getAllConnectedScreens()
 
 	while ((countOfConnectedScreens - 1) ~= width * height) do
-		data = ecs.universalWindow("auto", "auto", 44, 0xeeeeee, true, {"EmptyLine"}, {"WrappedText", 0x262626, "Теперь вам необходимо подключить внешние мониторы. Вы указали, что собираетесь сделать мультимонитор из " .. width*height .. " мониторов, но на данный момент вы подключили " .. countOfConnectedScreens - 1 .. " мониторов. Так что подключайте все так, как указали, и жмите \"Далее\"."}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "Далее"}, {0x777777, 0xffffff, "Отмена"}})
-		if data[1] == "Отмена" then
+		data = ecs.universalWindow("auto", "auto", 44, 0xeeeeee, true, {"EmptyLine"}, {"WrappedText", 0x262626, "Now you need to connect an external monitor. You indicated that you are going to make of multi-monitor " .. width*height .. " monitors, but at the moment you connect " .. countOfConnectedScreens - 1 .. " monitors. So turn off everything as indicated and click \"Next\"."}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "Next"}, {0x777777, 0xffffff, "cancellation"}})
+		if data[1] == "cancellation" then
 			ecs.prepareToExit()
-			print("Калибровка отменена!")
+			print("Calibration is canceled!")
 			os.exit()
 		end
 		countOfConnectedScreens = #getAllConnectedScreens()
@@ -90,8 +91,8 @@ local function configurator()
 
 		gpu.setBackground(colors.background)
 		gpu.setForeground(colors.foreground)
-		ecs.centerText("x", ySize - 5, "Начинаем процесс калибровки. Коснитесь монитора, подсвеченного зеленым цветом.")
-		ecs.centerText("x", ySize - 4, "Не нарушайте порядок прокосновений!")
+		ecs.centerText("x", ySize - 5, "We start the calibration process. Tap the monitor, highlighted in green.")
+		ecs.centerText("x", ySize - 4, "Do not defeat the touch!")
 	end
 
 	local touchArray = {}
@@ -114,7 +115,7 @@ local function configurator()
 					local color = math.random(0x555555, 0xffffff)
 					ecs.square(1,1,160,50,color)
 					gpu.setForeground(0xffffff - color)
-					ecs.centerText("xy", 0, "Монитор " .. xC .. "x" .. yC .. " откалиброван!")
+					ecs.centerText("xy", 0, "Monitor " .. xC .. "x" .. yC .. " calibrated!")
 					
 					-- table.insert(touchArray, {address = e[2], position = {x = xC, y = yC}})
 					touchArray[xC] = touchArray[xC] or {}
@@ -144,7 +145,7 @@ local function configurator()
 	monitors.totalResolutionByHeight = baseResolution.height * height
 
 	ecs.prepareToExit()
-	ecs.universalWindow("auto", "auto", 40, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x262626, "Калибровка успешно завершена!"}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "Отлично"}})
+	ecs.universalWindow("auto", "auto", 40, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x262626, "Calibration is successfully completed!"}, {"EmptyLine"}, {"Button", {ecs.colors.orange, 0xffffff, "Excellent"}})
 
 	gpu.setBackground(0x000000)
 	for x = 1, #monitors do
@@ -169,11 +170,11 @@ local function loadConfig()
 		monitors = serialization.unserialize(file:read("*a"))
 		file:close()
 		print(" ")
-		print("Файл конфигурации мультимонитора успешно загружен.")
+		print("multi-monitor configuration file was loaded successfully.")
 		print(" ")
-		print("Количество экранов: " .. monitors.countOfScreensByWidth .. "x" .. monitors.countOfScreensByHeight .. " шт")
-		print("Разрешение каждого экрана: " .. monitors.screenResolutionByWidth .. "x" .. monitors.screenResolutionByHeight .. " px")
-		print("Суммарного разрешение кластера: ".. monitors.totalResolutionByWidth .. "x" .. monitors.totalResolutionByHeight .. " px")
+		print("Number of screens: " .. monitors.countOfScreensByWidth .. "x" .. monitors.countOfScreensByHeight .. " PC")
+		print("The resolution of each screen: " .. monitors.screenResolutionByWidth .. "x" .. monitors.screenResolutionByHeight .. " px")
+		print("Total resolution of the cluster: ".. monitors.totalResolutionByWidth .. "x" .. monitors.totalResolutionByHeight .. " px")
 		print(" ")
 	else
 		configurator()

@@ -305,10 +305,20 @@ local function writeSignature(file)
 end
 
 --Сжать все цвета в изображении в 8-битную палитру
-local function compressImageColorsTo8Bit(picture)
+local function convertImageColorsTo8Bit(picture)
 	for i = 1, #picture, 4 do
 		picture[i] = colorlib.convert24BitTo8Bit(picture[i])
 		picture[i + 1] = colorlib.convert24BitTo8Bit(picture[i + 1])
+		if i % 505 == 0 then os.sleep(0) end
+	end
+	return picture
+end
+
+--Расжать все цвета в изображении в 24-битную палитру
+local function convertImageColorsTo24Bit(picture)
+	for i = 1, #picture, 4 do
+		picture[i] = colorlib.convert8BitTo24Bit(picture[i])
+		picture[i + 1] = colorlib.convert8BitTo24Bit(picture[i + 1])
 		if i % 505 == 0 then os.sleep(0) end
 	end
 	return picture
@@ -426,13 +436,20 @@ local function saveOCIF2(file, picture, compressColors)
 					else
 						file:write(convertBytesToString(extractBytesFromNumber(background, 3)))
 					end
-		
-					--Записываем координаты
-					for i = 1, #grouppedPucture[alpha][symbol][foreground][background], 2 do
+			
+					--Перебираем координаты
+					for y in pairs(grouppedPucture[alpha][symbol][foreground][background]) do
+						--Записываем заголовок координат, размер массива y и само значение y
 						file:write(
-							string.char(grouppedPucture[alpha][symbol][foreground][background][i]),
-							string.char(grouppedPucture[alpha][symbol][foreground][background][i + 1])
+							"Y",
+							string.char(getArraySize(grouppedPucture[alpha][symbol][foreground][background][y])),
+							string.char(y)
 						)
+						--Записываем ИКСЫЫЫ
+						--Ы
+						for i = 1, #grouppedPucture[alpha][symbol][foreground][background][y] do
+							file:write(string.char(grouppedPucture[alpha][symbol][foreground][background][y][i]))
+						end
 					end
 				end
 			end
@@ -442,7 +459,7 @@ local function saveOCIF2(file, picture, compressColors)
 	file:close()
 end
 
-local function loadOCIF2(file, decompressColors)
+local function loadOCIF2(file, decompressColors, useOCIF4)
 	local picture = {}
 
 	--Читаем размер изображения
@@ -451,20 +468,20 @@ local function loadOCIF2(file, decompressColors)
 	picture.width = readedWidth
 	picture.height = readedHeight
 
-	local header, alpha, symbol, foreground, background, alphaSize, symbolSize, foregroundSize, backgroundSize = ""
+	local header, alpha, symbol, foreground, background, y, alphaSize, symbolSize, foregroundSize, backgroundSize, ySize = ""
 	while true do
 		header = file:read(1)
 		if not header then break end
 		-- print("----------------------")
-		-- print("Заголовок: " .. header)
+		-- print("header: " .. header)
 
 		if header == "A" then
 			local countOfBytesForArraySize = string.byte(file:read(1))
 			alphaSize = string.byte(file:read(countOfBytesForArraySize))
 			alpha = string.byte(file:read(1))
-			-- print("Количество байт под размер массива символов: " .. countOfBytesForArraySize)
-			-- print("Размер массива символов: " .. alphaSize)
-			-- print("Альфа: " .. alpha)
+			-- print("The number of bytes to the size of the array of characters: " .. countOfBytesForArraySize)
+			-- print("The size of the array of characters: " .. alphaSize)
+			-- print("Alpha: " .. alpha)
 
 		elseif header == "S" then
 			if decompressColors then
@@ -473,8 +490,8 @@ local function loadOCIF2(file, decompressColors)
 				symbolSize = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
 			symbol = decodeChar(file)
-			-- print("Размер массива цвета текста: " .. symbolSize)
-			-- print("Символ: \"" .. symbol .. "\"")
+			-- print("solid color Text Size: " .. symbolSize)
+			-- print("Symbol: \"" .. symbol .. "\"")
 
 		elseif header == "F" then
 			if decompressColors then
@@ -484,8 +501,8 @@ local function loadOCIF2(file, decompressColors)
 				foregroundSize = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 				foreground = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
-			-- print("Размер массива цвета фона: " .. foregroundSize)
-			-- print("Цвет текста: " .. foreground)
+			-- print("an array of background colors Size: " .. foregroundSize)
+			-- print("Text color: " .. foreground)
 
 		elseif header == "B" then
 			backgroundSize = mergeBytesToNumber(string.byte(file:read(2), 1, 2))
@@ -494,23 +511,44 @@ local function loadOCIF2(file, decompressColors)
 			else
 				background = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
-			-- print("Размер массива координат: " .. backgroundSize)
-			-- print("Цвет фона: " .. background)
+			-- print("The size of the array of coordinates: " .. backgroundSize)
+			-- print("Background color: " .. background)
 
-			--Читаем координаты
-			for i = 1, backgroundSize, 2 do
+			--Поддержка загрузки формата OCIF3
+			if not useOCIF4 then
+				--Читаем координаты
+				for i = 1, backgroundSize, 2 do
+					local x = string.byte(file:read(1))
+					local y = string.byte(file:read(1))
+					local index = convertCoordsToIndex(x, y, readedWidth)
+					-- print("Coordinate: " .. x .. "x" .. y .. ", index: "..index)
+
+					picture[index] = background
+					picture[index + 1] = foreground
+					picture[index + 2] = alpha
+					picture[index + 3] = symbol
+				end	
+			end
+
+		--Новый формат OCIF4
+		elseif header == "Y" and useOCIF4 then
+			ySize = string.byte(file:read(1))
+			y = string.byte(file:read(1))
+			-- print("The size of the array Y: " .. ySize)
+			-- print("Current Y: " .. y)
+
+			for i = 1, ySize do
 				local x = string.byte(file:read(1))
-				local y = string.byte(file:read(1))
 				local index = convertCoordsToIndex(x, y, readedWidth)
-				-- print("Координата: " .. x .. "x" .. y .. ", индекс: "..index)
+				-- print("Coordinate: " .. x .. "x" .. y .. ", index: "..index)
 
 				picture[index] = background
 				picture[index + 1] = foreground
 				picture[index + 2] = alpha
 				picture[index + 3] = symbol
-			end			
+			end		
 		else
-			error("Ошибка чтения формата OCIF: неизвестный тип заголовка (" .. header .. ")")
+			error("Error while reading OCIF format: unknown Header type (" .. header .. ")")
 		end
 
 	end
@@ -627,9 +665,9 @@ function image.convertToGroupedImage(picture)
 		optimizedPicture[alpha][symbol] = optimizedPicture[alpha][symbol] or {}
 		optimizedPicture[alpha][symbol][foreground] = optimizedPicture[alpha][symbol][foreground] or {}
 		optimizedPicture[alpha][symbol][foreground][background] = optimizedPicture[alpha][symbol][foreground][background] or {}
+		optimizedPicture[alpha][symbol][foreground][background][yPos] = optimizedPicture[alpha][symbol][foreground][background][yPos] or {}
 
-		table.insert(optimizedPicture[alpha][symbol][foreground][background], xPos)
-		table.insert(optimizedPicture[alpha][symbol][foreground][background], yPos)
+		table.insert(optimizedPicture[alpha][symbol][foreground][background][yPos], xPos)
 		--Если xPos достигает width изображения, то сбросить на 1, иначе xPos++
 		xPos = (xPos == picture.width) and 1 or xPos + 1
 		--Если xPos равняется 1, то yPos++, а если нет, то похуй
@@ -668,23 +706,49 @@ function image.createImage(width, height, random)
 	return picture
 end
 
--- Функция оптимизации цвета текста у картинки, уменьшает число GPU-операций при отрисовке
+-- Функция оптимизации цвета текста и символов у картинки, уменьшает число GPU-операций при отрисовке из буфера
 -- Вызывается только при сохранении файла, так что на быстродействии не сказывается,
 -- а в целом штука очень и очень полезная. Фиксит криворукость художников.
-function image.optimize(picture, showOptimizationProcess)
-	local currentForeground = 0x000000
-	local optimizationCounter = 0
+function image.optimize(picture)
+	local i1, i2, i3 = 0, 0, 0
 	for i = 1, #picture, constants.elementCount do
-		if picture[i + 3] == " " and picture[i + 1] ~= currentForeground then		
-			picture[i + 1] = currentForeground
-			if showOptimizationProcess then picture[i + 3] = "#" end
-			optimizationCounter = optimizationCounter + 1
-		else
-			currentForeground = picture[i + 1]
+		--Уменьшаем нагрузку на ЦОПЕ
+		i1, i2, i3 = i + 1, i + 2, i + 3
+		--Если цвет фона равен цвету текста, и используется псевдографические полупиксели
+		if picture[i] == picture[i1] and (picture[i3] == "▄" or picture[i3] == "▀") then
+			picture[i3] = " "
+		end
+		--Если символ равен пролбелу, т.е. цвет текста не учитывается
+		if picture[i3] == " " then		
+			picture[i1] = 0x000000
 		end
 	end
-	if showOptimizationProcess then ecs.error("Count of optimized pixels: " .. optimizationCounter) end
+
 	return picture
+end
+
+--Получить пиксель из изображения по указанным координатам
+function image.get(picture, x, y)
+	if x >= 1 and y >= 1 and x <= picture.width and y <= picture.height then
+		local index = convertCoordsToIndex(x, y, picture.width)
+		return picture[index], picture[index + 1], picture[index + 2], picture[index + 3] 
+	else
+		return nil
+	end
+end
+
+--Установить пиксель в изображении по указанным координа
+function image.set(picture, x, y, background, foreground, alpha, symbol)
+	if x >= 1 and y >= 1 and x <= picture.width and y <= picture.height then
+		local index = convertCoordsToIndex(x, y, picture.width)
+		picture[index] = background or 0xFF00FF
+		picture[index + 1] = foreground or 0xFF00FF
+		picture[index + 2] = alpha or 0x00
+		picture[index + 3] = symbol or " "
+		return picture
+	else
+		error("Can't set pixel because it's located out of image coordinates: x = " .. x .. ", y = " .. y)
+	end
 end
 
 ------------------------------------------ Функция снятия скриншота с экрана ------------------------------------------------
@@ -925,11 +989,77 @@ function image.replaceColor(picture, fromColor, toColor)
 	return picture
 end
 
+--Функция размытия по Гауссу
+function image.gaussianBlur(picture, radius, force)
+	--Функция для генерации матрицы размытия
+	local function createConvolutionMatrix(maximumValue, matrixSize)
+		local delta = maximumValue / matrixSize
+		local matrix = {}
+		for y = 1, matrixSize do
+			for x = 1, matrixSize do
+				local value = ((x - 1) * delta + (y - 1) * delta) / 2
+				matrix[y] = matrix[y] or {}
+				matrix[y][x] = value
+			end
+		end
+		return matrix
+	end
+
+	--Функция для распределения стартового цвета на указанный пиксель на основе указанного значения матрицы
+	local function spreadPixelToSpecifiedCoordinates(picture, xCoordinate, yCoordinate, matrixValue, startBackground, startForeground, startAlpha, startSymbol)
+		local matrixBackground, matrixForeground, matrixAlpha, matrixSymbol = image.get(picture, xCoordinate, yCoordinate)
+
+		if matrixBackground and matrixForeground then
+			local newBackground = colorlib.alphaBlend(startBackground, matrixBackground, matrixValue)
+			--Пизданись оно все в жопу, ебанина
+			--Короч, смари. Если символ равен пробелу, то мы полюбэ не учитываем цвет текста, верно?
+			--Но в будущих итерациях это цвет будет учтен, поэтому возникали ссаные баги графические
+			--Поэтому даже для ебучего пробела мы присваиваем значение цвета текста, равному НОВОМУ цвету фона
+			--Т.е. вроде бы как они и равны, но потом охуенно все будет, угу
+			local newForeground = matrixSymbol == " " and newBackground or colorlib.alphaBlend(startForeground, matrixForeground, matrixValue)
+
+			image.set(picture, xCoordinate, yCoordinate, newBackground, newForeground, 0x00, matrixSymbol)
+		end
+	end
+
+	--Функция, распределяющая указанный пиксель по соседним пикселям на основе матрицы
+	local function spreadColorToOtherPixels(picture, xStart, yStart, matrix)
+		--Получаем стартовые данные о пикселе
+		local startBackground, startForeground, startAlpha, startSymbol = image.get(picture, xStart, yStart)
+		local xCoordinate, yCoordinate
+		--Перебираем матрицу
+		for yMatrix = 1, #matrix do
+			for xMatrix = 1, #matrix[yMatrix] do
+				--Игнорируем стартовый пиксель, на кой хер его размывать-то?
+				if not (xMatrix == 1 and yMatrix == 1) then
+					--Получаем координаты новых пикселей в изображении
+					--И в обратном направлении матрицы
+					xCoordinate, yCoordinate = xStart - xMatrix + 1, yStart - yMatrix + 1
+					spreadPixelToSpecifiedCoordinates(picture, xCoordinate, yCoordinate, matrix[yMatrix][xMatrix], startBackground, startForeground, startAlpha, startSymbol)
+					--Для начала в правильную сторону матрицы
+					xCoordinate, yCoordinate = xStart + xMatrix - 1, yStart + yMatrix - 1
+					spreadPixelToSpecifiedCoordinates(picture, xCoordinate, yCoordinate, matrix[yMatrix][xMatrix], startBackground, startForeground, startAlpha, startSymbol)
+				end
+			end
+		end
+	end
+
+	--Генерируем матрицу
+	local matrix = createConvolutionMatrix(force or 0x55, radius)
+	--Распределяем все пиксели по изображению
+	for y = 1, picture.height do
+		for x = 1, picture.width do
+			spreadColorToOtherPixels(picture, x, y, matrix)
+		end
+	end
+	return picture
+end
+
 ----------------------------------------- Основные функции программы -------------------------------------------------------------------
 
 --Сохранить изображение любого поддерживаемого формата
 function image.save(path, picture, encodingMethod)
-	encodingMethod = encodingMethod or 3
+	encodingMethod = encodingMethod or 4
 	--Создать папку под файл, если ее нет
 	fs.makeDirectory(fs.path(path))
 	--Получаем формат указанного файла
@@ -952,9 +1082,12 @@ function image.save(path, picture, encodingMethod)
 			file:write(string.char(encodingMethod))
 			saveOCIF2(file, picture)
 		elseif encodingMethod == 3 or string.lower(encodingMethod) == "ocif3" then
+			error("Encoding method 3 is deprecated and no longer supported. Use method 4 instead of it.")
+		elseif encodingMethod == 4 or string.lower(encodingMethod) == "ocif4" then
 			file:write(string.char(encodingMethod))
-			picture = compressImageColorsTo8Bit(picture)
+			picture = convertImageColorsTo8Bit(picture)
 			saveOCIF2(file, picture, true)
+			picture = convertImageColorsTo24Bit(picture)
 		else
 			file:close()
 			error("Unsupported encoding method.\n")
@@ -981,20 +1114,24 @@ function image.load(path)
 		--Читаем файлы в зависимости от метода
 		--print("Загружаю файл типа " .. encodingMethod)
 		if encodingMethod == 0 then
-			return loadRaw(file)
+			return image.optimize(loadRaw(file))
 		elseif encodingMethod == 1 then
-			return loadOCIF1(file)
+			return image.optimize(loadOCIF1(file))
 		elseif encodingMethod == 2 then
-			return loadOCIF2(file)
+			return image.optimize(loadOCIF2(file))
 		elseif encodingMethod == 3 then
-			return loadOCIF2(file, true)
+			return image.optimize(loadOCIF2(file, true))
+		elseif encodingMethod == 4 then
+			return image.optimize(loadOCIF2(file, true, true))
 		else
 			file:close()
-			error("Unsupported encoding method.\n")
+			error("Unsupported encoding method: " .. encodingMethod .. "\n")
 		end
+	--Поддержка ПНГ-формата
+	elseif fileFormat == constants.pngFileFormat then
+		return image.loadPng(path)
 	else
-		file:close()
-		error("Unsupported file format.\n")
+		error("Unsupported file format: " .. fileFormat .. "\n")
 	end
 end
 
@@ -1013,26 +1150,29 @@ function image.draw(x, y, picture)
 				for background in pairs(picture[alpha][symbol][foreground]) do
 					if gpu.getBackground ~= background then gpu.setBackground(background) end
 					currentBackground = background
-					for i = 1, #picture[alpha][symbol][foreground][background], 2 do	
-						xPos, yPos = x + picture[alpha][symbol][foreground][background][i], y + picture[alpha][symbol][foreground][background][i + 1]
-						
-						--Если альфа имеется, но она не совсем прозрачна
-						if (alpha > 0x00 and alpha < 0xFF) or (alpha == 0xFF and symbol ~= " ")then
-							_, _, currentBackground = gpu.get(xPos, yPos)
-							currentBackground = colorlib.alphaBlend(currentBackground, background, alpha)
-							gpu.setBackground(currentBackground)
 
-							gpu.set(xPos, yPos, symbol)
-
-						elseif alpha == 0x00 then
-							if currentBackground ~= background then
-								currentBackground = background
+					for yArray in pairs(picture[alpha][symbol][foreground][background]) do
+						for xArray = 1, #picture[alpha][symbol][foreground][background][yArray] do
+							xPos, yPos = x + picture[alpha][symbol][foreground][background][yArray][xArray], y + yArray
+							
+							--Если альфа имеется, но она не совсем прозрачна
+							if (alpha > 0x00 and alpha < 0xFF) or (alpha == 0xFF and symbol ~= " ")then
+								_, _, currentBackground = gpu.get(xPos, yPos)
+								currentBackground = colorlib.alphaBlend(currentBackground, background, alpha)
 								gpu.setBackground(currentBackground)
-							end
 
-							gpu.set(xPos, yPos, symbol)
+								gpu.set(xPos, yPos, symbol)
+
+							elseif alpha == 0x00 then
+								if currentBackground ~= background then
+									currentBackground = background
+									gpu.setBackground(currentBackground)
+								end
+
+								gpu.set(xPos, yPos, symbol)
+							end
+							--ecs.wait()
 						end
-						--ecs.wait()
 					end
 				end
 			end
@@ -1042,34 +1182,30 @@ end
 
 local function createSaveAndLoadFiles()
 	ecs.prepareToExit()
-	ecs.error("Создаю/загружаю изображение")
-	local cyka = image.load("MineOS/System/OS/Icons/Love.pic")
-	--local cyka = image.createImage(4, 4)
-	ecs.error("Рисую загруженное изображение")
+	ecs.error("I create / upload images")
+	-- local cyka = image.load("MineOS/System/OS/Icons/Love.pic")
+	local cyka = image.createImage(4, 4)
+	ecs.error("I draw a loaded image")
 	image.draw(2, 2, cyka)
-	ecs.error("Сохраняю его в 4 форматах")
+	ecs.error("Stores it in 4 formats")
 	image.save("0.pic", cyka, 0)
 	image.save("1.pic", cyka, 1)
-	image.save("2.pic", cyka, 2)
-	image.save("3.pic", cyka, 3)
+	image.save("4.pic", cyka, 4)
 	ecs.prepareToExit()
-	ecs.error("Загружаю все 4 формата и рисую их")
+	ecs.error("Loading all 4 formats and draw them")
 	local cyka0 = image.load("0.pic")
 	image.draw(2, 2, cyka0)
 	local cyka1 = image.load("1.pic")
 	image.draw(10, 2, cyka1)
-	local cyka2 = image.load("2.pic")
-	image.draw(18, 2, cyka2)
-	local cyka3 = image.load("3.pic")
-	image.draw(26, 2, cyka3)
-	ecs.error("Рисую все 3 формата")
+	local cyka4 = image.load("4.pic")
+	image.draw(34, 2, cyka4)
 end
 
 ------------------------------------------ Место для баловства ------------------------------------------------
 
 -- ecs.prepareToExit()
 
--- local cyka = image.load("MineOS/Applications/Piano.app/Resources/Icon.pic")
+-- local cyka = image.load("3.pic")
 -- image.draw(2, 2, cyka)
 -- ecs.error(HEXtoSTRING(cyka[1], 6, true))
 -- image.draw(8, 2, cyka)

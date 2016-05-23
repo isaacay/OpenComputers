@@ -6,7 +6,7 @@ local gpu = c.gpu
 
 --Проверка на наличие нужных устройств
 if not c.isAvailable("hologram") then
-  ecs.error("Подключите голографический проектор 2-ого уровня")
+  ecs.error("Connect the holographic projector 2nd level")
   return
 else
   holo = c.hologram
@@ -456,7 +456,7 @@ while true do
   hologram.text(10, height, 24, date, 2)
   
   term.clear()
-  gpu.set(2, 2, "Текущее время: " .. date)
+  gpu.set(2, 2, "present time: " .. date)
   
   os.sleep(1)
 end

@@ -89,7 +89,7 @@ function buffer.get(x, y)
 	if x >= buffer.drawLimit.x1 and y >= buffer.drawLimit.y1 and x <= buffer.drawLimit.x2 and y <= buffer.drawLimit.y2 then
 		return buffer.screen.current[index], buffer.screen.current[index + 1], buffer.screen.current[index + 2]
 	else
-		error("Невозможно получить указанные значения, так как указанные координаты лежат за пределами экрана.\n")
+		error("Unable to get the specified values as the specified coordinates lie outside of the screen.\n")
 	end
 end
 
@@ -212,7 +212,7 @@ function buffer.copy(x, y, width, height)
 	}
 
 	if x < 1 or y < 1 or x + width - 1 > buffer.screen.width or y + height - 1 > buffer.screen.height then
-		errror("Область копирования выходит за пределы экрана.")
+		errror("Copy area extends beyond the screen.")
 	end
 
 	local index
@@ -231,7 +231,7 @@ end
 --Вставить скопированную ранее область изображения
 function buffer.paste(x, y, copyArray)
 	local index, arrayIndex
-	if not copyArray or #copyArray == 0 then error("Массив области экрана пуст.") end
+	if not copyArray or #copyArray == 0 then error("An array of screen area is empty.") end
 
 	for j = y, (y + copyArray.height - 1) do
 		for i = x, (x + copyArray.width - 1) do

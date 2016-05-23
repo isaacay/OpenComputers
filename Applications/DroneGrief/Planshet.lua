@@ -22,7 +22,7 @@ local keys = {
 ---------------------------------------------------------------------------------------------------------
 
 print(" ")
-print("Добро пожаловать в программу DroneGrief. Используйте клавиши W и S для перемещения дрона, а A и D для смены направления движения. По нажатию SHIFT дрон опустится ниже, а по SPACE - выше. Кнопка E заставит дрона высосать предметы из инвентаря под и над ним, а кнопка C сменит цвет его свечения. При скроллинге колесиком мыши изменяется скорость движения робота, а скроллинг с зажатым ALT изменяет его ускорение.")
+print("Welcome to the DroneGrief. Use W and S keys to move the drone, and A and D to change the direction of motion. By pressing the SHIFT drone is below, and on SPACE - above. E button will cause the drone to suck from the inventory items above and below it, and the C button will change the color of its glow. When scrolling the mouse wheel changes the speed of movement of the robot, and scrolling with clamped ALT changes its acceleration.")
 print(" ")
 
 ---------------------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ while true do
   local e = {event.pull()}
   if e[1] == "key_down" then
     if keys[e[4]] then
-      print("Команда дрону: " .. keys[e[4]])
+      print("Team drone: " .. keys[e[4]])
       modem.broadcast(port, "ECSDrone", keys[e[4]])
     end
   elseif e[1] == "scroll" then
@@ -55,9 +55,9 @@ while true do
   elseif e[1] == "modem_message" then
     if e[6] == "ECSDrone" and e[7] == "DroneInfo" then
       print(" ")
-      print("Скорость дрона: " .. tostring(e[8]))
-      print("Ускорение дрона: " .. tostring(e[9]))
-      print("Направление дрона: " .. tostring(e[10]))
+      print("drone speed: " .. tostring(e[8]))
+      print("drone Acceleration: " .. tostring(e[9]))
+      print("The direction of the drone: " .. tostring(e[10]))
       print(" ")
     end
   end

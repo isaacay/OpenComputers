@@ -14,7 +14,7 @@ local toolUsingSide = 1
 if component.isAvailable("modem") then
 	modem = component.modem
 else
-	error("Этой программе требуется беспроводной модем для работы!")
+	error("This program requires a wireless modem for the job!")
 end
 
 modem.open(port)
@@ -38,13 +38,13 @@ local function redstoneControl()
 		for i = 0, 5 do
 			redstone.setOutput(i, 0)
 		end
-		print("Сигнал редстоуна включен со всех сторон робота!")
+		print("Redstone signal is enabled on all sides of the robot!")
 		redstoneState = false
 	else
 		for i = 0, 5 do
 			redstone.setOutput(i, 15)
 		end
-		print("Сигнал редстоуна отключен.")
+		print("Redstone signal is turned off.")
 		redstoneState = true
 	end
 end
@@ -62,7 +62,7 @@ local function receive()
 				if message == "selfDestroy" then
 					local fs = require("filesystem")
 					for file in fs.list("") do
-						print("Уничтожаю \"" .. file .. "\"")
+						print("kill \"" .. file .. "\"")
 						fs.remove(file)
 					end
 					require("term").clear()
@@ -70,24 +70,24 @@ local function receive()
 				elseif message == "use" then
 					if toolUsingMode then
 						if toolUsingSide == 1 then
-							print("Использую экипированный предмет в режиме правого клика перед роботом")
+							print("Equipped using the right-click the object in front of the robot mode")
 							robot.use()
 						elseif toolUsingSide == 0 then
-							print("Использую экипированный предмет в режиме правого клика под роботом")
+							print("Equipped using the object in the right-click operation by robot")
 							robot.useDown()
 						elseif toolUsingSide == 2 then
-							print("Использую экипированный предмет в режиме правого клика над роботом")
+							print("Equipped using the right-click the object in the robot mode")
 							robot.useUp()
 						end
 					else
 						if toolUsingSide == 1 then
-							print("Использую экипированный предмет в режиме левого клика перед роботом")
+							print("Using Equipped object in the left-click mode to robot")
 							robot.swing()
 						elseif toolUsingSide == 0 then
-							print("Использую экипированный предмет в режиме левого клика под роботом")
+							print("Using Equipped object in the left-click mode for robot")
 							robot.swingDown()
 						elseif toolUsingSide == 2 then
-							print("Использую экипированный предмет в режиме левого клика над роботом")
+							print("Using Equipped object in the left-click mode, the robot")
 							robot.swingUp()
 						end
 					end
@@ -98,11 +98,11 @@ local function receive()
 				elseif message == "changeToolUsingMode" then
 					toolUsingMode = not toolUsingMode
 				elseif message == "increaseToolUsingSide" then
-					print("Изменяю режим использования вещи")
+					print("Change the mode of using things")
 					toolUsingSide = toolUsingSide + 1
 					if toolUsingSide > 2 then toolUsingSide = 2 end
 				elseif message == "decreaseToolUsingSide" then
-					print("Изменяю режим использования вещи")
+					print("Change the mode of using things")
 					toolUsingSide = toolUsingSide - 1
 					if toolUsingSide < 0 then toolUsingSide = 0 end
 				end
@@ -113,11 +113,11 @@ end
 
 local function main()
 	print(" ")
-	print("Добро пожаловать в программу ECSGrief Receiver v1.0 alpha early access! Идет ожидание команд с беспроводного устройства.")
+	print("Welcome to the ECS Grief Receiver v1.0 alpha early access! There is a waiting command from the wireless device.")
 	print(" ")
 	receive()
 	print(" ")
-	print("Программа приема сообщений завершена!")
+	print("Messages reception program is complete!")
 end
 
 -------------------------------------------------------------------------------------

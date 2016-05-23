@@ -47,7 +47,7 @@ local function drawWindow(x, y)
 	buffer.square(x, y + 2, width, 1, 0xBBBBBB, 0xFFFFFF, " ")
 
 	--Рисуем заголовок нашего окошка
-	buffer.text(x + 30, y, 0x000000, "Тестовое окно")
+	buffer.text(x + 30, y, 0x000000, "test window")
 
 	--Создаем три кнопки в левом верхнем углу для закрытия, разворачивания и сворачивания окна
 	buffer.set(x + 1, y, 0xDDDDDD, 0xFF4940, "⬤")
@@ -55,7 +55,7 @@ local function drawWindow(x, y)
 	buffer.set(x + 5, y, 0xDDDDDD, 0x00B640, "⬤")
 
 	--Рисуем элементы "Избранного" чисто для демонстрации
-	buffer.text(x + 1, y + 3, 0x000000, "Избранное")
+	buffer.text(x + 1, y + 3, 0x000000, "Favorites")
 	for i = 1, 6 do buffer.text(x + 2, y + 3 + i, 0x555555, "Вариант " .. i) end
 
 	--Рисуем "Файлы" в виде желтых квадратиков. Нам без разницы, а выглядит красиво
@@ -63,7 +63,7 @@ local function drawWindow(x, y)
 	  for i = 1, 5 do
 	    local xPos, yPos = x + 22 + i*12 - 12, y + 4 + j*7 - 7
 	    buffer.square(xPos, yPos, 8, 4, 0xFFFF80, 0xFFFFFF, " ")
-	    buffer.text(xPos, yPos + 5, 0x262626, "Файл " .. i .. "x" .. j)
+	    buffer.text(xPos, yPos + 5, 0x262626, "File " .. i .. "x" .. j)
 	  end
 	end
 
@@ -85,13 +85,13 @@ local function drawWindow(x, y)
 
 		yPos = yPos + 1
 		xPos = xPos + 2
-		buffer.text(xPos + 2, yPos, 0x262626, "Клик левой кнопкой мыши: изменить позицию окошка"); yPos = yPos + 1
-		buffer.text(xPos + 2, yPos, 0x262626, "Клик правой кнопкой: нарисовать еще одно такое же окошко"); yPos = yPos + 1
-		buffer.text(xPos + 2, yPos, 0x262626, "Колесо мыши: изменить прозрачность окна"); yPos = yPos + 2
-		buffer.text(xPos + 2, yPos, 0x262626, "Space: переключить фон между картинкой и статичным цветом"); yPos = yPos + 1
-		buffer.text(xPos + 2, yPos, 0x262626, "Shift: изменить цвет фона на рандомный"); yPos = yPos + 1
-		buffer.text(xPos + 2, yPos, 0x262626, "Tab: включить или отключить данную информационную панель"); yPos = yPos + 1
-		buffer.text(xPos + 2, yPos, 0x262626, "Enter: выйти отсудова на хер"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Click the left mouse button: change the position of the window"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Right click: draw another the same window"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Mouse Wheel: change the transparency of a window"); yPos = yPos + 2
+		buffer.text(xPos + 2, yPos, 0x262626, "Space: to switch between the background image and the static light"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Shift: change the background color to a random"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Tab: enable or disable the dashboard"); yPos = yPos + 1
+		buffer.text(xPos + 2, yPos, 0x262626, "Enter: bad translation"); yPos = yPos + 1
 	end
 end
 

@@ -1,1 +1,1 @@
-Репозиторий MineOS и вспомогательного софта под OpenComputers.
+Repository MineOS and support of software for OpenComputers.

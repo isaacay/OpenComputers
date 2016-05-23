@@ -14,8 +14,8 @@ local hologram = component.hologram
 local pixels = {}
 
 local model = {
-	label = "Sosi hui",
-	tooltip = "mamu ebal",
+	label = "New Label",
+	tooltip = "No tooltop",
 	buttonMode = true,
 	redstoneEmitter = true,
 	active = {
@@ -124,23 +124,23 @@ local function drawRightBar()
 	local xPos, yPos = sizes.xStartOfRightBar, sizes.yStartOfRightBar
 	ecs.square(xPos, yPos, sizes.widthOfRightBar, sizes.heightOfRightBar, colors.rightBar)
 	
-	drawInfo(yPos, "Работа с моделью"); yPos = yPos + 2
+	drawInfo(yPos, "Working with the model"); yPos = yPos + 2
 
 	yPos = yPos + 5
 
-	drawInfo(yPos, "Работа с объектом"); yPos = yPos + 2
+	drawInfo(yPos, "Working with objects"); yPos = yPos + 2
 
 	yPos = yPos + 5
 
-	drawInfo(yPos, "Выбор объекта"); yPos = yPos + 3
+	drawInfo(yPos, "object Selection"); yPos = yPos + 3
 	drawShapesList(xPos + 2, yPos); yPos = yPos + (countOfShapes / 6 * 2) + 1
 
-	drawInfo(yPos, "Управление голограммой"); yPos = yPos + 2
+	drawInfo(yPos, "hologram Management"); yPos = yPos + 2
 
 	yPos = yPos + 5
 
 
-	drawInfo(yPos, "Управление принтером"); yPos = yPos + 2
+	drawInfo(yPos, "printer management"); yPos = yPos + 2
 
 	yPos = yPos + 5
 
@@ -311,7 +311,7 @@ end
 
 ------------------------------------------ Программа -----------------------------------------------------------------
 
-if sizes.xSize < 150 then ecs.error("Этой программе требуется монитор и видеокарта 3 уровня."); return end
+if sizes.xSize < 150 then ecs.error("This program requires a tier 3 video card and monitor."); return end
 
 gpu.setResolution(sizes.xSize, sizes.ySize)
 
