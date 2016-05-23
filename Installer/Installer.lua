@@ -124,18 +124,18 @@ local GitHubUserUrl = "https://raw.githubusercontent.com/"
 
 
 local preLoadApi = {
-  { paste = "isaacay/OpenComputers/master/lib/ECSAPI.lua", path = "lib/ECSAPI.lua" },
-  { paste = "isaacay/OpenComputers/master/lib/colorlib.lua", path = "lib/colorlib.lua" },
-  { paste = "isaacay/OpenComputers/master/lib/image.lua", path = "lib/image.lua" },
-  { paste = "isaacay/OpenComputers/master/lib/config.lua", path = "lib/config.lua" },
-  { paste = "isaacay/OpenComputers/master/MineOS/Icons/Languages.pic", path = "MineOS/System/OS/Icons/Languages.pic" },
-  { paste = "isaacay/OpenComputers/master/MineOS/Icons/OK.pic", path = "MineOS/System/OS/Icons/OK.pic" },
-  { paste = "isaacay/OpenComputers/master/MineOS/Icons/Downloading.pic", path = "MineOS/System/OS/Icons/Downloading.pic" },
-  { paste = "isaacay/OpenComputers/master/MineOS/Icons/OS_Logo.pic", path = "MineOS/System/OS/Icons/OS_Logo.pic" },
+  { paste = "IgorTimofeev/OpenComputers/master/lib/ECSAPI.lua", path = "lib/ECSAPI.lua" },
+  { paste = "IgorTimofeev/OpenComputers/master/lib/colorlib.lua", path = "lib/colorlib.lua" },
+  { paste = "IgorTimofeev/OpenComputers/master/lib/image.lua", path = "lib/image.lua" },
+  { paste = "IgorTimofeev/OpenComputers/master/lib/config.lua", path = "lib/config.lua" },
+  { paste = "IgorTimofeev/OpenComputers/master/MineOS/Icons/Languages.pic", path = "MineOS/System/OS/Icons/Languages.pic" },
+  { paste = "IgorTimofeev/OpenComputers/master/MineOS/Icons/OK.pic", path = "MineOS/System/OS/Icons/OK.pic" },
+  { paste = "IgorTimofeev/OpenComputers/master/MineOS/Icons/Downloading.pic", path = "MineOS/System/OS/Icons/Downloading.pic" },
+  { paste = "IgorTimofeev/OpenComputers/master/MineOS/Icons/OS_Logo.pic", path = "MineOS/System/OS/Icons/OS_Logo.pic" },
 }
 
 print("Downloading file list")
-applications = seri.unserialize(getFromGitHubSafely(GitHubUserUrl .. "isaacay/OpenComputers/master/Applications.txt", "MineOS/System/OS/Applications.txt"))
+applications = seri.unserialize(getFromGitHubSafely(GitHubUserUrl .. "IgorTimofeev/OpenComputers/master/Applications.txt", "MineOS/System/OS/Applications.txt"))
 print(" ")
 
 for i = 1, #preLoadApi do
@@ -226,8 +226,8 @@ do
   --Качаем язык
   ecs.info("auto", "auto", " ", " Installing language packages...")
   local pathToLang = "MineOS/System/OS/Installer/Language.lang"
-  getFromGitHubSafely(GitHubUserUrl .. "isaacay/OpenComputers/master/Installer/" .. _G.OSSettings.language .. ".lang", pathToLang)
-  getFromGitHubSafely(GitHubUserUrl .. "isaacay/OpenComputers/master/MineOS/License/" .. _G.OSSettings.language .. ".txt", "MineOS/System/OS/License.txt")
+  getFromGitHubSafely(GitHubUserUrl .. "IgorTimofeev/OpenComputers/master/Installer/" .. _G.OSSettings.language .. ".lang", pathToLang)
+  getFromGitHubSafely(GitHubUserUrl .. "IgorTimofeev/OpenComputers/master/MineOS/License/" .. _G.OSSettings.language .. ".txt", "MineOS/System/OS/License.txt")
   
   --Ставим язык
   lang = config.readAll(pathToLang)
@@ -352,7 +352,7 @@ if downloadWallpapers then ecs.createShortCut("MineOS/System/OS/Wallpaper.lnk", 
 
 --Автозагрузка
 local file = io.open("autorun.lua", "w")
-file:write("local success, reason = pcall(loadfile(\"OS.lua\")); if not success then print(\"Error: \" .. tostring(reason)) end")
+file:write("local success, reason = pcall(loadfile(\"OS.lua\")); if not success then print(\"Ошибка: \" .. tostring(reason)) end")
 file:close()
 
 --------------------------СТАДИЯ ПЕРЕЗАГРУЗКИ КОМПА-----------------------------------
