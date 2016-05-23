@@ -340,7 +340,7 @@ function ECSAPI.getAppsToUpdate(debug)
 	local pathToApplicationsFile = "MineOS/System/OS/Applications.txt"
 	local pathToSecondApplicationsFile = "MineOS/System/OS/Applications2.txt"
 	--Путь к файл-листу на пастебине
-	local paste = "3j2x4dDn"
+	local paste = "ng62rt5d"
 	--Выводим инфу
 	local oldPixels
 	if debug then oldPixels = ECSAPI.info("auto", "auto", " ", "Checking for updates...") end
@@ -1559,7 +1559,7 @@ function ECSAPI.loadOSSettings()
 		_G.OSSettings = serialization.unserialize(file:read("*a"))
 		file:close()
 	else
-		_G.OSSettings = { showHelpOnApplicationStart = true, language = "Russian" }
+		_G.OSSettings = { showHelpOnApplicationStart = true, language = "English" }
 		ECSAPI.saveOSSettings()
 	end
 end
