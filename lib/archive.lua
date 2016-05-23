@@ -55,7 +55,7 @@ function package.unpack(pathToPackedPackage, whereToSaveUnpackedFiles)
 	
 	--Проверка сигнатуры файла пакета
 	local readedSignature = packageFileStream:read("*l")
-	if readedSignature ~= packageSignature then error("Ошибка чтения файла пакета: неверная сигнатура. Возможно, вы пытаетесь наебать эту программу и подсовываете ей левый файл?\n") end
+	if readedSignature ~= packageSignature then error("package file read error: Invalid signature.\n") end
 
 	--Распаковка файла пакета на основе записей из него
 	local line = ""
@@ -67,7 +67,7 @@ function package.unpack(pathToPackedPackage, whereToSaveUnpackedFiles)
 			local path = unicode.sub(packageFileStream:read("*l"), 4, -1)
 			fs.makeDirectory(whereToSaveUnpackedFiles .. "/" .. (fs.path(path) or ""))
 
-			debug("Распаковка файла \"" .. whereToSaveUnpackedFiles .. "/" .. path .. "\"")		
+			debug("Unpacking file \"" .. whereToSaveUnpackedFiles .. "/" .. path .. "\"")		
 			fileFileStream = io.open(whereToSaveUnpackedFiles .. "/" .. path, "w")
 		elseif line == packageFileEnd then
 			fileFileStream:close()

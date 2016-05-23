@@ -1,40 +1,30 @@
 
----------------------------------------------- Копирайт, епта ------------------------------------------------------------------------
+---------------------------------------------- Copyright, epta - -------------------------------------------------- ---------------------
 
 local copyright = [[
 
-	Тут можно было бы написать кучу текста, мол,
-	вы не имеете прав на использование этой хуйни в
-	коммерческих целях и прочую чушь, навеянную нам
-	западной культурой. Но я же не пидор какой-то, верно?
-
-	Просто помни, что эту ОСь накодил Тимофеев Игорь,
-	ссылка на ВК: vk.com/id7799889
+blank
 
 ]]
 
--- Вычищаем копирайт из оперативки, ибо мы не можем тратить СТОЛЬКО памяти.
--- Сколько тут, раз, два, три... 295 ASCII-символов!
--- А это, между прочим, 59 раз по слову "Пидор". Но один раз - не пидорас, поэтому очищаем.
--- copyright = nil
+--Clean out the copyright of RAM because we can not spend as much memory.
+--What then, one, two, three. . . 295 ASCII-characters!
+--And this is, by the way, 59 times the word 'Faggot.' But once - no fag, so clean.
+--Copyright = nil
 
----------------------------------------------- Библиотеки ------------------------------------------------------------------------
+---------------------------------------------- Library --- -------------------------------------------------- -------------------
 
--- Адаптивная загрузка необходимых библиотек и компонентов
+--Adaptive load the necessary libraries and components
 local libraries = {
-	ecs = "ECSAPI",
-	component = "component",
-	event = "event",
-	term = "term",
-	files = "files",
-	context = "context",
-	buffer = "doubleBuffering",
-	image = "image",
-	SHA2 = "SHA2",
-}
-
-local components = {
-	gpu = "gpu",
+ecs = 'ECSAPI',
+component = 'component',
+event = 'event',
+term = 'term',
+files = 'files',
+context = 'context',
+buffer = 'doubleBuffering',
+image = 'image',
+SHA2 = 'SHA2',
 }
 
 for library in pairs(libraries) do if not _G[library] then _G[library] = require(libraries[library]) end end
@@ -312,11 +302,11 @@ local function windows10()
 			draw(0x0092FF)
 			drawAll()
 
-			local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "  Да шучу я.  "}, {"CenterText", 0x000000, "  Но ведь достали же обновления, верно?  "}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xFFFFFF, "Да"}, {0x999999, 0xFFFFFF, "Нет"}})
-			if data[1] == "Да" then
+			local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "  Yes , I 'm kidding.  "}, {"CenterText", 0x000000, "  But you got the same update, right?  "}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xFFFFFF, "Yes"}, {0x999999, 0xFFFFFF, "No"}})
+			if data[1] == "Yes" then
 				disableUpdates()
 			else
-				ecs.error("Пидора ответ!")
+				ecs.error("kk")
 			end
 
 			return
@@ -536,12 +526,12 @@ while true do
 						shell.execute("reboot")
 					elseif action == lang.updates then
 						ecs.prepareToExit()
-						shell.execute("pastebin run 0nm5b1ju")
+						ecs.error("updates are disabled")
 						return 0
 					elseif action == lang.aboutSystem then
 						ecs.prepareToExit()
 						print(copyright)
-						print("А теперь жмякай любую кнопку и продолжай работу с ОС.")
+						print("And now press any button and continue to work with the operating system.")
 						ecs.waitForTouchOrClick()
 						drawAll(true)
 					end

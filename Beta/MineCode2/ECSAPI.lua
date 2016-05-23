@@ -1,4 +1,4 @@
-
+--translation skipped on line 2399 and 2400
 -- Адаптивная загрузка необходимых библиотек и компонентов
 local libraries = {
 	["component"] = "component",
@@ -10,7 +10,6 @@ local libraries = {
 	["keyboard"] = "keyboard",
 	["computer"] = "computer",
 	["serialization"] = "serialization",
-	["colorlib"] = "colorlib",
 	--["internet"] = "internet",
 	--["image"] = "image",
 }
@@ -73,6 +72,25 @@ ECSAPI.colors = {
 
 ----------------------------------------------------------------------------------------------------
 
+--Отключение принудительного завершения программ
+function ECSAPI.disableInterrupting()
+	_G.eventInterruptBackup = package.loaded.event.shouldInterrupt 
+	_G.eventSoftInterruptBackup = package.loaded.event.shouldSoftInterrupt 
+	
+	package.loaded.event.shouldInterrupt = function () return false end
+	package.loaded.event.shouldSoftInterrupt = function () return false end
+end
+
+--Включение принудительного завершения программ
+function ECSAPI.enableInterrupting()
+	if _G.eventInterruptBackup then
+		package.loaded.event.shouldInterrupt = _G.eventInterruptBackup 
+		package.loaded.event.shouldSoftInterrupt = _G.eventSoftInterruptBackup
+	else
+		error("Cant't enable interrupting beacause of it's already enabled.")
+	end
+end
+
 --Установка масштаба монитора
 function ECSAPI.setScale(scale, debug)
 	--Базовая коррекция масштаба, чтобы всякие умники не писали своими погаными ручонками, чего не следует
@@ -96,7 +114,7 @@ function ECSAPI.setScale(scale, debug)
 	end
 
 	--Рассчитываем пропорцию монитора в псевдопикселях
-	local xScreens, yScreens = component.screen.getAspectRatio()
+	local xScreens, yScreens = component.proxy(component.gpu.getScreen()).getAspectRatio()
 	local xPixels, yPixels = calculateAspect(xScreens), calculateAspect(yScreens)
 	local proportion = xPixels / yPixels
 
@@ -106,10 +124,10 @@ function ECSAPI.setScale(scale, debug)
 	--Получаем теоретическое максимальное разрешение монитора с учетом его пропорции, но без учета лимита видеокарты
 	local newWidth, newHeight
 	if proportion >= 1 then
-		newWidth = math.floor(xMax)
+		newWidth = xMax
 		newHeight = math.floor(newWidth / proportion / 2)
 	else
-		newHeight = math.floor(yMax)
+		newHeight = yMax
 		newWidth = math.floor(newHeight * proportion * 2)
 	end
 
@@ -117,37 +135,36 @@ function ECSAPI.setScale(scale, debug)
 	local optimalNewWidth, optimalNewHeight = newWidth, newHeight
 
 	if optimalNewWidth > xMax then
-		local difference = optimalNewWidth - xMax
+		local difference = newWidth / xMax
 		optimalNewWidth = xMax
-		optimalNewHeight = optimalNewHeight - math.ceil(difference / 2 )
+		optimalNewHeight = math.ceil(newHeight / difference)
 	end
 
 	if optimalNewHeight > yMax then
-		local difference = optimalNewHeight - yMax
+		local difference = newHeight / yMax
 		optimalNewHeight = yMax
-		--optimalNewWidth = optimalNewWidth - difference * 2 - math.ceil(difference / 2)
-		optimalNewWidth = optimalNewWidth - difference * 2
+		optimalNewWidth = math.ceil(newWidth / difference)
 	end
 
 	--Корректируем идеальное разрешение по заданному масштабу
 	local finalNewWidth, finalNewHeight = math.floor(optimalNewWidth * scale), math.floor(optimalNewHeight * scale)
 
+	--Устанавливаем выбранное разрешение
+	gpu.setResolution(finalNewWidth, finalNewHeight)
+
 	--Выводим инфу, если нужно
 	if debug then
 		print(" ")
-		print("Максимальное разрешение: "..xMax.."x"..yMax)
-		print("Пропорция монитора: "..xPixels.."x"..yPixels)
-		print("Коэффициент пропорции: "..proportion)
+		print("Maximum resolution: "..xMax.."x"..yMax)
+		print("proportion monitor: "..xPixels.."x"..yPixels)
+		print("factor proportions: "..proportion)
 		print(" ")
-		print("Теоретическое разрешение: "..newWidth.."x"..newHeight)
-		print("Оптимизированное разрешение: "..optimalNewWidth.."x"..optimalNewHeight)
+		print("Theoretical resolution: "..newWidth.."x"..newHeight)
+		print("Optimized resolution: "..optimalNewWidth.."x"..optimalNewHeight)
 		print(" ")
-		print("Новое разрешение: "..finalNewWidth.."x"..finalNewHeight)
+		print("New resolution: "..finalNewWidth.."x"..finalNewHeight)
 		print(" ")
 	end
-
-	--Устанавливаем выбранное разрешение
-	gpu.setResolution(finalNewWidth, finalNewHeight)
 end
 
 function ECSAPI.rebindGPU(address)
@@ -212,6 +229,14 @@ function ECSAPI.findMount(address)
   end
 end
 
+function ECSAPI.getArraySize(array)
+	local size = 0
+	for key in pairs(array) do
+		size = size + 1
+	end
+	return size
+end
+
 --Скопировать файлы с одного диска на другой с заменой
 function ECSAPI.duplicateFileSystem(fromAddress, toAddress)
 	local source, destination = ECSAPI.findMount(fromAddress), ECSAPI.findMount(toAddress)
@@ -222,7 +247,7 @@ end
 --Загрузка файла с инета
 function ECSAPI.getFileFromUrl(url, path)
 	if not _G.internet then _G.internet = require("internet") end
-	local sContent = ""
+
 	local result, response = pcall(internet.request, url)
 	if not result then
 		ECSAPI.error("Could not connect to to URL address \"" .. url .. "\"")
@@ -235,12 +260,9 @@ function ECSAPI.getFileFromUrl(url, path)
 
 	for chunk in response do
 		file:write(chunk)
-		sContent = sContent .. chunk
 	end
 
 	file:close()
-
-	return sContent
 end
 
 --Загрузка файла с пастебина
@@ -256,23 +278,59 @@ function ECSAPI.getFromGitHub(url, path)
 end
 
 --Загрузить ОС-приложение
-function ECSAPI.getOSApplication(elementFromMassiv)
-	--Удаляем старый файл и получаем путь
-	local path = elementFromMassiv.name
-	fs.remove(path)
-	--Если тип = приложение
-	if elementFromMassiv.type == "Application" then
-		fs.makeDirectory(path .. ".app/Resources")
-		ECSAPI.getFromGitHub(elementFromMassiv.url, path .. ".app/" .. fs.name(elementFromMassiv.name .. ".lua"))
-		ECSAPI.getFromGitHub(elementFromMassiv.icon, path .. ".app/Resources/Icon.pic")
-		if elementFromMassiv.resources then
-			for i = 1, #elementFromMassiv.resources do
-				ECSAPI.getFromGitHub(elementFromMassiv.resources[i].url, path .. ".app/Resources/" .. elementFromMassiv.resources[i].name)
+function ECSAPI.getOSApplication(application, downloadWallpapers)
+	if downloadWallpapers == nil then downloadWallpapers = true end
+    --Если это приложение
+    if application.type == "Application" then
+		--Удаляем приложение, если оно уже существовало и создаем все нужные папочки
+		fs.remove(application.name .. ".app")
+		fs.makeDirectory(application.name .. ".app/Resources")
+		
+		--Загружаем основной исполняемый файл и иконку
+		ECSAPI.getFromGitHub(application.url, application.name .. ".app/" .. fs.name(application.name .. ".lua"))
+		ECSAPI.getFromGitHub(application.icon, application.name .. ".app/Resources/Icon.pic")
+
+		--Если есть ресурсы, то загружаем ресурсы
+		if application.resources then
+			for i = 1, #application.resources do
+				ECSAPI.getFromGitHub(application.resources[i].url, application.name .. ".app/Resources/" .. application.resources[i].name)
 			end
 		end
-	--А если че-то другое
+
+		--Если есть файл "о программе", то грузим и его
+		if application.about then
+			ECSAPI.getFromGitHub(application.about, application.name .. ".app/Resources/About.txt")
+		end 
+
+		--Если имеется режим создания ярлыка, то создаем его
+		if application.createShortcut then
+			local desktopPath = "MineOS/Desktop/"
+			local dockPath = "MineOS/System/OS/Dock/"
+			
+			if application.createShortcut == "dock" then
+				ECSAPI.createShortCut(dockPath .. fs.name(application.name) .. ".lnk", application.name .. ".app")
+			else
+				ECSAPI.createShortCut(desktopPath .. fs.name(application.name) .. ".lnk", application.name .. ".app")
+			end
+		end
+
+	--Если тип = другой, чужой, а мб и свой пастебин
+	elseif application.type == "Pastebin" then
+		ECSAPI.getFromPastebin(application.url, application.name)
+
+	--Если обои
+	elseif application.type == "Wallpaper" then
+		if downloadWallpapers then
+			ECSAPI.getFromGitHub(application.url, application.name)
+		end
+	
+	--Если просто какой-то скрипт
+	elseif application.type == "Script" or application.type == "Library" then
+		ECSAPI.getFromGitHub(application.url, application.name)
+	
+	--А если ваще какая-то абстрактная хуйня, либо ссылка на веб, то загружаем по УРЛ-ке
 	else
-		ECSAPI.getFromGitHub(elementFromMassiv.url, path)
+		ECSAPI.getFileFromUrl(application.url, application.name)
 	end
 end
 
@@ -328,10 +386,10 @@ function ECSAPI.getAppsToUpdate(debug)
 end
 
 --Сделать строку пригодной для отображения в ОпенКомпах
+--Заменяет табсы на пробелы и виндовый возврат каретки на человеческий UNIX-овский
 function ECSAPI.stringOptimize(sto4ka, indentatonWidth)
-	indentatonWidth = indentatonWidth or 2
     sto4ka = string.gsub(sto4ka, "\r\n", "\n")
-    sto4ka = string.gsub(sto4ka, "	", string.rep(" ", indentatonWidth))
+    sto4ka = string.gsub(sto4ka, "	", string.rep(" ", indentatonWidth or 2))
     return stro4ka
 end
 
@@ -577,8 +635,8 @@ function ECSAPI.drawCustomImage(x,y,pixels)
 	for i=1,pixelsHeight do
 		for j=1,pixelsWidth do
 			if pixels[i][j][3] ~= "#" then
-				gpu.setBackground(pixels[i][j][1])
-				gpu.setForeground(pixels[i][j][2])
+				if gpu.getBackground() ~= pixels[i][j][1] then gpu.setBackground(pixels[i][j][1]) end
+				if gpu.getForeground() ~= pixels[i][j][2] then gpu.setForeground(pixels[i][j][2]) end
 				gpu.set(x+j,y+i,pixels[i][j][3])
 			end
 		end
@@ -923,40 +981,51 @@ end
 
 --Функция по переносу слов на новую строку в зависимости от ограничения по ширине
 function ECSAPI.stringWrap(strings, limit)
-	local massiv = {}
-
+	-- local massiv = {}
+	local firstSlice, secondSlice
     --Перебираем все указанные строки
-    for i = 1, #strings do
+    local i = 1
+    while i <= #strings do
        
-        --Создаем массив слов данной строки
-        local words = {}
-        for match in string.gmatch(strings[i], "[^%s]+") do table.insert(words, match) end
+    	if unicode.len(strings[i]) > limit then
+    		firstSlice = unicode.sub(strings[i], 1, limit)
+    		secondSlice = unicode.sub(strings[i], limit + 1, -1)
+    		
+    		strings[i] = firstSlice
+    		table.insert(strings, i + 1, secondSlice)
+    	end
 
-        --Если длина слов не превышает лимита
-        if unicode.len(strings[i]) <= limit then
-            table.insert(massiv, table.concat(words, " "))
-        else
-            --Перебираем все слова данной строки с 1 до конца
-            local from = 1
-            local to = 1
-            while to <= #words do
-                --Если длина соединенных слов превышает лимит, то
-                if unicode.len(table.concat(words, " ", from, to)) > limit then
-                    --Вставить в новый массив строк 
-                    table.insert(massiv, table.concat(words, " ", from, to - 1))
-                    from = to
-                else
-                    if to == #words then
-                        table.insert(massiv, table.concat(words, " ", from, to))
-                    end
-                end
+    	i = i + 1
 
-                to = to + 1
-            end
-        end
+        -- --Создаем массив слов данной строки
+        -- local words = {}
+        -- for match in string.gmatch(strings[i], "[^%s]+") do table.insert(words, match) end
+
+        -- --Если длина слов не превышает лимита
+        -- if unicode.len(strings[i]) <= limit then
+        --     table.insert(massiv, table.concat(words, " "))
+        -- else
+        --     --Перебираем все слова данной строки с 1 до конца
+        --     local from = 1
+        --     local to = 1
+        --     while to <= #words do
+        --         --Если длина соединенных слов превышает лимит, то
+        --         if unicode.len(table.concat(words, " ", from, to)) > limit then
+        --             --Вставить в новый массив строк 
+        --             table.insert(massiv, table.concat(words, " ", from, to - 1))
+        --             from = to
+        --         else
+        --             if to == #words then
+        --                 table.insert(massiv, table.concat(words, " ", from, to))
+        --             end
+        --         end
+
+        --         to = to + 1
+        --     end
+        -- end
     end
 
-    return massiv
+    return strings
 end
 
 --Моя любимая функция ошибки C:
@@ -1001,15 +1070,22 @@ function ECSAPI.progressBar(x, y, width, height, background, foreground, percent
 end
 
 --Окошко с прогрессбаром! Давно хотел
-function ECSAPI.progressWindow(x, y, width, percent, text)
+function ECSAPI.progressWindow(x, y, width, percent, text, returnOldPixels)
 	local height = 6
 	local barWidth = width - 6
 
 	x, y = ECSAPI.correctStartCoords(x, y, width, height)
 
+	local oldPixels
+	if returnOldPixels then
+		oldPixels = ECSAPI.rememberOldPixels(x, y, x + width + 1, y + height)
+	end
+
 	ECSAPI.emptyWindow(x, y, width, height, " ")
 	ECSAPI.colorTextWithBack(x + math.floor(width / 2 - unicode.len(text) / 2), y + 4, 0x000000, ECSAPI.windowColors.background, text)
 	ECSAPI.progressBar(x + 3, y + 2, barWidth, 1, 0xCCCCCC, ECSAPI.colors.blue, percent)
+
+	return oldPixels
 end
 
 --Функция для ввода текста в мини-поле.
@@ -1107,27 +1183,28 @@ function ECSAPI.parseErrorMessage(error, translate)
 
 	if translate then
 		for i = 1, #parsedError do
-			parsedError[i] = string.gsub(parsedError[i], "interrupted", "Выполнение программы прервано пользователем")
-			parsedError[i] = string.gsub(parsedError[i], " got ", " получена ")
-			parsedError[i] = string.gsub(parsedError[i], " expected,", " ожидается,")
-			parsedError[i] = string.gsub(parsedError[i], "bad argument #", "Неверный аргумент №")
-			parsedError[i] = string.gsub(parsedError[i], "stack traceback", "Отслеживание ошибки")
-			parsedError[i] = string.gsub(parsedError[i], "tail calls", "Дочерние функции")
-			parsedError[i] = string.gsub(parsedError[i], "in function", "в функции")
-			parsedError[i] = string.gsub(parsedError[i], "in main chunk", "в основной программе")
-			parsedError[i] = string.gsub(parsedError[i], "unexpected symbol near", "неожиданный символ рядом с")
-			parsedError[i] = string.gsub(parsedError[i], "attempt to index", "несуществующий индекс")
-			parsedError[i] = string.gsub(parsedError[i], "attempt to get length of", "не удается получить длину")
+			parsedError[i] = string.gsub(parsedError[i], "interrupted", "Implementation of the program interrupted by user")
+			parsedError[i] = string.gsub(parsedError[i], " got ", " obtained ")
+			parsedError[i] = string.gsub(parsedError[i], " expected,", " expected,")
+			parsedError[i] = string.gsub(parsedError[i], "bad argument #", "Invalid argument #")
+			parsedError[i] = string.gsub(parsedError[i], "stack traceback", "Tracking error")
+			parsedError[i] = string.gsub(parsedError[i], "tail calls", "Affiliated challenges")
+			parsedError[i] = string.gsub(parsedError[i], "in function", "function in")
+			parsedError[i] = string.gsub(parsedError[i], "in main chunk", "in the main program")
+			parsedError[i] = string.gsub(parsedError[i], "unexpected symbol near", "unexpected character near")
+			parsedError[i] = string.gsub(parsedError[i], "attempt to index", "attempt to index")
+			parsedError[i] = string.gsub(parsedError[i], "attempt to get length of", "attempt to get length of")
 			parsedError[i] = string.gsub(parsedError[i], ": ", ", ")
-			parsedError[i] = string.gsub(parsedError[i], " module ", " модуль ")
-			parsedError[i] = string.gsub(parsedError[i], "not found", "не найден")
-			parsedError[i] = string.gsub(parsedError[i], "no field package.preload", "не найдена библиотека")
-			parsedError[i] = string.gsub(parsedError[i], "no file", "нет файла")
-			parsedError[i] = string.gsub(parsedError[i], "local", "локальной")
-			parsedError[i] = string.gsub(parsedError[i], "global", "глобальной")
-			parsedError[i] = string.gsub(parsedError[i], "no primary", "не найден компонент")
-			parsedError[i] = string.gsub(parsedError[i], "available", "в доступе")
-			parsedError[i] = string.gsub(parsedError[i], "attempt to concatenate", "не могу присоединить")
+			parsedError[i] = string.gsub(parsedError[i], " module ", " module ")
+			parsedError[i] = string.gsub(parsedError[i], "not found", "not found")
+			parsedError[i] = string.gsub(parsedError[i], "no field package.preload", "no field package.preload")
+			parsedError[i] = string.gsub(parsedError[i], "no file", "no file")
+			parsedError[i] = string.gsub(parsedError[i], "local", "local")
+			parsedError[i] = string.gsub(parsedError[i], "global", "global")
+			parsedError[i] = string.gsub(parsedError[i], "no primary", "Component not found")
+			parsedError[i] = string.gsub(parsedError[i], "available", "access")
+			parsedError[i] = string.gsub(parsedError[i], "attempt to concatenate", "attempt to concatenate")
+			parsedError[i] = string.gsub(parsedError[i], "a nil value", "a nil value")
 		end
 	end
 
@@ -1146,16 +1223,17 @@ function ECSAPI.displayCompileMessage(y, reason, translate, withAnimation)
 
 	--Получаем ширину и высоту окошка
 	local width = math.floor(xSize * 7 / 10)
-	local height = #reason + 6
 	local textWidth = width - 11
+	reason = ECSAPI.stringWrap(reason, textWidth)
+	local height = #reason + 6
 
 	--Просчет вот этой хуйни, аааахаахах
 	local difference = ySize - (height + y)
 	if difference < 0 then
 		for i = 1, (math.abs(difference) + 1) do
-			table.remove(reason, 1)
+			table.remove(reason, #reason)
 		end
-		table.insert(reason, 1, "…")
+		table.insert(reason, "…")
 		height = #reason + 6
 	end
 
@@ -1169,48 +1247,50 @@ function ECSAPI.displayCompileMessage(y, reason, translate, withAnimation)
 	}
 
 	--Запоминаем, че было отображено
-	local oldPixels = ECSAPI.rememberOldPixels(x, y, x + width + 1, y + height)
+	local oldPixels
+
+	local function drawCompileMessage(y)
+		ECSAPI.square(x, y, width, height, ECSAPI.windowColors.background)
+		ECSAPI.windowShadow(x, y, width, height)
+			--Рисуем воскл знак
+		ECSAPI.drawCustomImage(x + 2, y + 1, errorImage)
+
+		--Рисуем текст
+		local yPos = y + 1
+		local xPos = x + 9
+		gpu.setBackground(ECSAPI.windowColors.background)
+
+		ECSAPI.colorText(xPos, yPos, ECSAPI.windowColors.usualText, "Код ошибки:")
+		yPos = yPos + 2
+
+		gpu.setForeground( 0xcc0000 )
+		for i = 1, #reason do
+			gpu.set(xPos, yPos, reason[i])
+			yPos = yPos + 1
+		end
+
+		yPos = yPos + 1
+		ECSAPI.colorText(xPos, yPos, ECSAPI.windowColors.usualText, ECSAPI.stringLimit("end", "Press any key to continue", textWidth))
+	end
 
 	--Типа анимация, ога
 	if withAnimation then
-		for i = 1, height, 1 do
-			ECSAPI.square(x, y, width, i, ECSAPI.windowColors.background)
-			ECSAPI.windowShadow(x, y, width, i)
+		oldPixels = ECSAPI.rememberOldPixels(x, 1, x + width + 1, height + 1)
+		for i = -height, 1, 1 do
+			drawCompileMessage(i)
 			os.sleep(0.01)
 		end
 	else
-		ECSAPI.square(x, y, width, height, ECSAPI.windowColors.background)
-		ECSAPI.windowShadow(x, y, width, height)
+		oldPixels = ECSAPI.rememberOldPixels(x, y, x + width + 1, y + height)
+		drawCompileMessage(y)
 	end
-
-	--Рисуем воскл знак
-	ECSAPI.drawCustomImage(x + 2, y + 1, errorImage)
-
-	--Рисуем текст
-	local yPos = y + 1
-	local xPos = x + 9
-	gpu.setBackground(ECSAPI.windowColors.background)
-
-	ECSAPI.colorText(xPos, yPos, ECSAPI.windowColors.usualText, "Код ошибки:")
-	yPos = yPos + 2
-
-	gpu.setForeground( 0xcc0000 )
-	for i = 1, #reason do
-		gpu.set(xPos, yPos, ECSAPI.stringLimit("end", reason[i], textWidth))
-		yPos = yPos + 1
-	end
-
-	yPos = yPos + 1
-	ECSAPI.colorText(xPos, yPos, ECSAPI.windowColors.usualText, ECSAPI.stringLimit("end", "Нажмите любую клавишу, чтобы продолжить", textWidth))
 
 	--Пикаем звуком кароч
 	for i = 1, 3 do
 		computer.beep(1000)
 	end
-
 	--Ждем сам знаешь чего
-	ECSAPI.waitForTouchOrClick()
-
+	ECSAPI.wait()
 	--Рисуем, че было нарисовано
 	ECSAPI.drawOldPixels(oldPixels)
 end
@@ -1218,10 +1298,10 @@ end
 --Спросить, заменять ли файл (если таковой уже имеется)
 function ECSAPI.askForReplaceFile(path)
 	if fs.exists(path) then
-		local action = ECSAPI.universalWindow("auto", "auto", 46, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Файл \"".. fs.name(path) .. "\" уже имеется в этом месте."}, {"CenterText", 0x262626, "Заменить его перемещаемым объектом?"}, {"EmptyLine"}, {"Button", {0xdddddd, 0x262626, "Оставить оба"}, {0xffffff, 0x262626, "Отмена"}, {ECSAPI.colors.lightBlue, 0xffffff, "Заменить"}})
-		if action[1] == "Оставить оба" then
+		local action = ECSAPI.universalWindow("auto", "auto", 46, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "File \"".. fs.name(path) .. "\" This is already in place."}, {"CenterText", 0x262626, "Replace it to move objects?"}, {"EmptyLine"}, {"Button", {0xdddddd, 0x262626, "Leave Both"}, {0xffffff, 0x262626, "cancellation"}, {ECSAPI.colors.lightBlue, 0xffffff, "replace the"}})
+		if action[1] == "Leave Both" then
 			return "keepBoth"
-		elseif action[2] == "Отмена" then
+		elseif action[2] == "cancellation" then
 			return "cancel"
 		else
 			return "replace"
@@ -1233,12 +1313,12 @@ end
 function ECSAPI.checkName(name, path)
 	--Если ввели хуйню какую-то, то
 	if name == "" or name == " " or name == nil then
-		ECSAPI.error("Неверное имя файла.")
+		ECSAPI.error("Invalid file name.")
 		return false
 	else
 		--Если файл с новым путем уже существует, то
 		if fs.exists(path .. name) then
-			ECSAPI.error("Файл \"".. name .. "\" уже имеется в этом месте.")
+			ECSAPI.error("File \"".. name .. "\" This is already in place.")
 			return false
 		--А если все заебок, то
 		else
@@ -1253,7 +1333,7 @@ function ECSAPI.rename(mainPath)
 	local name = fs.name(mainPath)
 	path = fs.path(mainPath)
 	--Рисуем окошко ввода нового имени файла
-	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Переименовать"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, name}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Rename"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, name}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 	--Переименовываем
 	if ECSAPI.checkName(inputs[1], path) then
 		fs.rename(mainPath, path .. inputs[1])
@@ -1263,7 +1343,7 @@ end
 --Создать новую папку (для операционки)
 function ECSAPI.newFolder(path)
 	--Рисуем окошко ввода нового имени файла
-	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Новая папка"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "new folder"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 
 	if ECSAPI.checkName(inputs[1], path) then
 		fs.makeDirectory(path .. inputs[1])
@@ -1273,7 +1353,7 @@ end
 --Создать новый файл (для операционки)
 function ECSAPI.newFile(path)
 	--Рисуем окошко ввода нового имени файла
-	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Новый файл"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+	local inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "New file"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 
 	if ECSAPI.checkName(inputs[1], path) then
 		ECSAPI.prepareToExit()
@@ -1286,7 +1366,7 @@ function ECSAPI.newApplication(path, startName)
 	--Рисуем окошко ввода нового имени файла
 	local inputs
 	if not startName then
-		inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Новое приложение"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Введите имя"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+		inputs = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "New application"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Enter your name"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 	end
 
 	if ECSAPI.checkName(inputs[1] .. ".app", path) then
@@ -1302,7 +1382,7 @@ end
 
 --Создать приложение на основе существующего ЛУА-файла
 function ECSAPI.newApplicationFromLuaFile(pathToLuaFile, pathWhereToCreateApplication)
-	local data = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "Новое приложение"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Имя приложения"}, {"Input", 0x262626, 0x880000, "Путь к иконке приложения"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+	local data = ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "New application"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Application Name"}, {"Input", 0x262626, 0x880000, "The path to the application's icon"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 	data[1] = data[1] or "MyApplication"
 	data[2] = data[2] or "MineOS/System/OS/Icons/SampleIcon.pic"
 	if fs.exists(data[2]) then
@@ -1310,9 +1390,9 @@ function ECSAPI.newApplicationFromLuaFile(pathToLuaFile, pathWhereToCreateApplic
 		fs.copy(pathToLuaFile, pathWhereToCreateApplication .. "/" .. data[1] .. ".app/" .. data[1] .. ".lua")
 		fs.copy(data[2], pathWhereToCreateApplication .. "/" .. data[1] .. ".app/Resources/Icon.pic")
 
-		--ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "Приложение создано!"}, {"EmptyLine"}, {"Button", {ecs.colors.green, 0xffffff, "OK"}})
+		--ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x000000, "The application is built!"}, {"EmptyLine"}, {"Button", {ecs.colors.green, 0xffffff, "OK"}})
 	else
-		ECSAPI.error("Указанный файл иконки не существует.")
+		ECSAPI.error("The specified file icons do not exist.")
 		return
 	end
 end
@@ -1464,7 +1544,7 @@ end
 --Сохранить файл конфигурации ОС
 function ECSAPI.saveOSSettings()
 	local pathToOSSettings = "MineOS/System/OS/OSSettings.cfg"
-	if not _G.OSSettings then error("Массив настроек ОС отсутствует в памяти!") end
+	if not _G.OSSettings then error("Array OS settings is not in memory!") end
 	fs.makeDirectory(fs.path(pathToOSSettings))
 	local file = io.open(pathToOSSettings, "w")
 	file:write(serialization.serialize(_G.OSSettings))
@@ -1487,15 +1567,22 @@ end
 --Отобразить окно с содержимым файла информации о приложении
 function ECSAPI.applicationHelp(pathToApplication)
 	local pathToAboutFile = pathToApplication .. "/resources/About.txt"
-	if fs.exists(pathToAboutFile) and _G.OSSettings and _G.OSSettings.showHelpOnApplicationStart then
+	if _G.OSSettings and _G.OSSettings.showHelpOnApplicationStart and fs.exists(pathToAboutFile) then
 		local applicationName = fs.name(pathToApplication)
 		local file = io.open(pathToAboutFile, "r")
 		local text = ""
 		for line in file:lines() do text = text .. line .. " " end
 		file:close()
 
-		local data = ECSAPI.universalWindow("auto", "auto", 52, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x262626, "О приложении " .. applicationName}, {"EmptyLine"}, {"TextField", 14, 0xffffff, 0x262626, 0xcccccc, 0x3366CC, text}, {"EmptyLine"}, {"Switch", 0x3366CC, 0xffffff, 0x262626, "Показывать информацию о приложениях", true}, {"EmptyLine"}, {"Button", {ECSAPI.colors.green, 0xffffff, "OK"}})
-		if data[1] == false then
+		local data = ECSAPI.universalWindow("auto", "auto", 30, 0xeeeeee, true,
+			{"EmptyLine"},
+			{"CenterText", 0x000000, "About application " .. applicationName},
+			{"EmptyLine"},
+			{"TextField", 16, 0xFFFFFF, 0x262626, 0xcccccc, 0x353535, text},
+			{"EmptyLine"},
+			{"Button", {ECSAPI.colors.orange, 0x262626, "OK"}, {0x999999, 0xffffff, "Do not show"}}
+		)
+		if data[1] ~= "OK" then
 			_G.OSSettings.showHelpOnApplicationStart = false
 			ECSAPI.saveOSSettings()
 		end
@@ -1517,7 +1604,7 @@ function ECSAPI.readShortcut(path)
 	if success then
 		return filename
 	else
-		error("Ошибка чтения файла ярлыка. Вероятно, он создан криво, либо не существует в папке " .. path)
+		error("Error reading the file label. File may be corrupted or does not exist in the folder " .. path)
 	end
 end
 
@@ -1591,6 +1678,7 @@ local function OSIconsInit()
 		ECSAPI.OSIcons.pastebin = image.load(ECSAPI.pathToIcons .. "Pastebin.pic")
 		ECSAPI.OSIcons.fileNotExists = image.load(ECSAPI.pathToIcons .. "FileNotExists.pic")
 		ECSAPI.OSIcons.archive = image.load(ECSAPI.pathToIcons .. "Archive.pic")
+		ECSAPI.OSIcons.model3D = image.load(ECSAPI.pathToIcons .. "3DModel.pic")
 	end
 end
 
@@ -1634,6 +1722,8 @@ function ECSAPI.drawOSIcon(x, y, path, showFileFormat, nameColor)
 			icon = "pastebin"
 		elseif fileFormat == ".pkg" then
 			icon = "archive"
+		elseif fileFormat == ".3dm" then
+			icon = "model3D"
 		elseif not fs.exists(path) then
 			icon = "fileNotExists"
 		else
@@ -1658,11 +1748,24 @@ function ECSAPI.drawOSIcon(x, y, path, showFileFormat, nameColor)
 end
 
 --ЗАПУСТИТЬ ПРОГУ
-function ECSAPI.launchIcon(path, arguments)
+function ECSAPI.launchIcon(path)
+	local withAnimation = false
+	local translate = true
+
+	local function safeLaunch(command, ...)
+		local success, reason = pcall(loadfile(command), ...)
+		--Ебал я автора мода в задницу, кусок ебанутого говна
+		--Какого хуя я должен вставлять кучу костылей в свой прекрасный код только потому, что эта ублюдочная
+		--Скотина захотела выдавать table из pcall? Что, блядь? Где это видано, сука?
+		--Почему тогда во всех случаях выдается string, а при os.exit выдается {reason = "terminated"}?
+		--Что за ебливая сучья логика? 
+		if not success and type(reason) ~= "table" then
+			ECSAPI.displayCompileMessage(1, reason, translate, withAnimation)
+		end
+	end
+
 	--Запоминаем, какое разрешение было
 	local oldWidth, oldHeight = gpu.getResolution()
-	--Создаем нормальные аргументы для Шелла
-	if arguments then arguments = " " .. arguments else arguments = "" end
 	--Получаем файл формат заранее
 	local fileFormat = ECSAPI.getFileFormat(path)
 	local isDirectory = fs.isDirectory(path)
@@ -1670,32 +1773,37 @@ function ECSAPI.launchIcon(path, arguments)
 	if fileFormat == ".app" then
 		ECSAPI.applicationHelp(path)
 		local cyka = path .. "/" .. ECSAPI.hideFileFormat(fs.name(path)) .. ".lua"
-		local success, reason = shell.execute(cyka)
-		if not success then ECSAPI.displayCompileMessage(1, reason, true) end
+		safeLaunch(cyka)
+	
 	--Если это папка
 	elseif (fileFormat == "" or fileFormat == nil) and isDirectory then
-		shell.execute("MineOS/Applications/Finder.app/Finder.lua " .. path)
+		safeLaunch("MineOS/Applications/Finder.app/Finder.lua " .. path)
+	
 	--Если это обычный луа файл - т.е. скрипт
 	elseif fileFormat == ".lua" or fileFormat == nil then
 		ECSAPI.prepareToExit()
-		local success, reason = shell.execute(path .. arguments)
+		local success, reason = pcall(loadfile(path))
 		if success then
 			print(" ")
 			print("Program sucessfully executed. Press any key to continue.")
 			print(" ")
 		else
-			ECSAPI.displayCompileMessage(1, reason, true)
+			ECSAPI.displayCompileMessage(1, reason, translate, withAnimation)
 		end
+	
 	--Если это фоточка
 	elseif fileFormat == ".pic" then
-		shell.execute("MineOS/Applications/Photoshop.app/Photoshop.lua open " .. path)
-	--Если это фоточка
-	elseif fileFormat == ".raw" then
-		shell.execute("MineOS/Applications/Photoshop.app/Photoshop.lua open " .. path)
+		safeLaunch("MineOS/Applications/Viewer.app/Viewer.lua", "open", path)
+	
+	--Если это 3D-модель
+	elseif fileFormat == ".3dm" then
+		safeLaunch("MineOS/Applications/3DPrint.app/3DPrint.lua open " .. path)
+	
 	--Если это текст или конфиг или языковой
 	elseif fileFormat == ".txt" or fileFormat == ".cfg" or fileFormat == ".lang" then
 		ECSAPI.prepareToExit()
-		shell.execute("edit "..path)
+		safeLaunch("bin/edit.lua", path)
+
 	--Если это ярлык
 	elseif fileFormat == ".lnk" then
 		local shortcutLink = ECSAPI.readShortcut(path)
@@ -1704,18 +1812,7 @@ function ECSAPI.launchIcon(path, arguments)
 		else
 			ECSAPI.error("File from shortcut link doesn't exists.")
 		end
-	--Если это ссылка на пастебин
-	elseif fileFormat == ".paste" then
-		local shortcutLink = ECSAPI.readShortcut(path)
-		ECSAPI.prepareToExit()
-		local success, reason = shell.execute("pastebin run " .. shortcutLink)
-		if success then
-			print(" ")
-			print("Program sucessfully executed. Press any key to continue.")
-			ECSAPI.waitForTouchOrClick()
-		else
-			ECSAPI.displayCompileMessage(1, reason, false)
-		end
+	
 	--Если это архив
 	elseif fileFormat == ".zip" then
 		zip.unarchive(path, (fs.path(path) or ""))
@@ -1724,6 +1821,48 @@ function ECSAPI.launchIcon(path, arguments)
 	gpu.setResolution(oldWidth, oldHeight)
 end
 
+-- Анимация затухания экрана
+function ECSAPI.fadeOut(startColor, targetColor, speed)
+	local xSize, ySize = gpu.getResolution()
+	while startColor >= targetColor do
+		gpu.setBackground(startColor)
+		gpu.fill(1, 1, xSize, ySize, " ")
+		startColor = startColor - 0x111111
+		os.sleep(speed or 0)
+	end
+end
+
+-- Анимация загорания экрана
+function ECSAPI.fadeIn(startColor, targetColor, speed)
+	local xSize, ySize = gpu.getResolution()
+	while startColor <= targetColor do
+		gpu.setBackground(startColor)
+		gpu.fill(1, 1, xSize, ySize, " ")
+		startColor = startColor + 0x111111
+		os.sleep(speed or 0)
+	end
+end
+
+-- Анимация выхода в олдскул-телевизионном стиле
+function ECSAPI.TV(speed, targetColor)
+	local xSize, ySize = gpu.getResolution()
+	local xCenter, yCenter = math.floor(xSize / 2), math.floor(ySize / 2)
+	gpu.setBackground(targetColor or 0x000000)
+	
+	for y = 1, yCenter do
+		gpu.fill(1, y - 1, xSize, 1, " ")
+		gpu.fill(1, ySize - y + 1, xSize, 1, " ")
+		os.sleep(speed or 0)
+	end
+	
+	for x = 1, xCenter - 1 do
+		gpu.fill(x, yCenter, 1, 1, " ")
+		gpu.fill(xSize - x + 1, yCenter, 1, 1, " ")
+		os.sleep(speed or 0)
+	end
+	os.sleep(0.3)
+	gpu.fill(1, yCenter, xSize, 1, " ")
+end
 
 
 
@@ -1774,7 +1913,7 @@ function ECSAPI.universalWindow(x, y, width, background, closeWindowAfter, ...)
 		--elseif objectType == "separator" then
 			
 		elseif objectType == "textfield" then
-			correctWidth(7)
+			correctWidth(5)
 		elseif objectType == "wrappedtext" then
 			correctWidth(6)
 		elseif objectType == "button" then
@@ -2010,9 +2149,9 @@ function ECSAPI.universalWindow(x, y, width, background, closeWindowAfter, ...)
 		
 		elseif objectType == "textfield" then
 			newObj("TextFields", number, x + 1, objects[number].y, x + width - 2, objects[number].y + objects[number][2] - 1)
-			if not objects[number].strings then objects[number].strings = ECSAPI.stringWrap({objects[number][7]}, width - 7) end
+			if not objects[number].strings then objects[number].strings = ECSAPI.stringWrap({objects[number][7]}, width - 3) end
 			objects[number].displayFrom = objects[number].displayFrom or 1
-			ECSAPI.textField(x + 1, objects[number].y, width - 2, objects[number][2], objects[number].strings, objects[number].displayFrom, objects[number][3], objects[number][4], objects[number][5], objects[number][6])
+			ECSAPI.textField(x, objects[number].y, width, objects[number][2], objects[number].strings, objects[number].displayFrom, objects[number][3], objects[number][4], objects[number][5], objects[number][6])
 		
 		elseif objectType == "wrappedtext" then
 			gpu.setBackground(background)
@@ -2065,7 +2204,7 @@ function ECSAPI.universalWindow(x, y, width, background, closeWindowAfter, ...)
 
 		elseif objectType == "color" then
 			local xPos, yPos = x + 1, objects[number].y
-			local blendedColor = colorlib.alphaBlend(objects[number][3], 0xFFFFFF, 180)
+			local blendedColor = require("colorlib").alphaBlend(objects[number][3], 0xFFFFFF, 180)
 			local w = width - 2
 
 			ECSAPI.colorTextWithBack(xPos, yPos + 2, blendedColor, background, string.rep("▀", w))
@@ -2250,32 +2389,32 @@ function ECSAPI.demoWindow()
 	--Рисуем окно и получаем данные после взаимодействия с ним
 	local data = ECSAPI.universalWindow("auto", "auto", 36, 0xeeeeee, true,
 		{"EmptyLine"},
-		{"CenterText", 0x880000, "Здорово, ебана!"},
+		{"CenterText", 0x880000, "Wow, ebana!"},
 		{"EmptyLine"},
-		{"Input", 0x262626, 0x880000, "Сюда вводить можно"},
-		{"Selector", 0x262626, 0x880000, "Выбор формата", "PNG", "JPG", "GIF", "PSD"},
+		{"Input", 0x262626, 0x880000, "Here you can enter"},
+		{"Selector", 0x262626, 0x880000, "Choosing a format", "PNG", "JPG", "GIF", "PSD"},
 		{"EmptyLine"},
-		{"WrappedText", 0x262626, "Тест автоматического переноса букв в зависимости от ширины данного окна. Пока что тупо режет на куски, не особо красиво."},
+		{"WrappedText", 0x262626, "Test the automatic transfer of letters depending on the width of the window."},
 		{"EmptyLine"},
 		{"Select", 0x262626, 0x880000, "Я пидор", "Я не пидор"},
 		{"Slider", 0x262626, 0x880000, 1, 100, 50, "Убито ", " младенцев"},
 		{"EmptyLine"},
 		{"Separator", 0xaaaaaa},
-		{"Switch", 0xF2B233, 0xffffff, 0x262626, "✈ Авиарежим", false},
+		{"Switch", 0xF2B233, 0xffffff, 0x262626, "✈ Airplane", false},
 		{"EmptyLine"},
-		{"Switch", 0x3366CC, 0xffffff, 0x262626, "☾  Не беспокоить", true},
+		{"Switch", 0x3366CC, 0xffffff, 0x262626, "☾ Do Not Disturb", true},
 		{"Separator", 0xaaaaaa},
 		{"EmptyLine"},
-		{"TextField", 5, 0xffffff, 0x262626, 0xcccccc, 0x3366CC, "Тест текстового информационного поля. По сути это тот же самый WrappedText, разве что эта хрень ограничена по высоте, и ее можно скроллить. Ну же, поскролль меня! Скролль меня полностью! Моя жадная пизда жаждет твой хуй!"},
-		{"Color", "Цвет фона", 0xFF0000},
+		{"TextField", 5, 0xffffff, 0x262626, 0xcccccc, 0x3366CC, "Test text information field."},
+		{"Color", "Background color", 0xFF0000},
 		{"EmptyLine"},
-		{"Button", {0x57A64E, 0xffffff, "Да"}, {0xF2B233, 0xffffff, "Нет"}, {0xCC4C4C, 0xffffff, "Отмена"}}
+		{"Button", {0x57A64E, 0xffffff, "Yes"}, {0xF2B233, 0xffffff, "No"}, {0xCC4C4C, 0xffffff, "cancellation"}}
 	)
 	--Еще разок
 	ECSAPI.prepareToExit()
 	--Выводим данные
 	print(" ")
-	print("Вывод данных из окна:")
+	print("Data output from the window:")
 	for i = 1, #data do print("["..i.."] = "..tostring(data[i])) end
 	print(" ")
 end
@@ -2283,140 +2422,138 @@ end
 -- ECSAPI.demoWindow()
 
 --[[
-Функция universalWindow(x, y, width, background, closeWindowAfter, ...)
+function universalWindow(x, y, width, background, closeWindowAfter, ...)
 
-	Это универсальная модульная функция для максимально удобного и быстрого отображения
-	необходимой вам информации. С ее помощью вводить данные с клавиатуры, осуществлять выбор
-	из предложенных вариантов, рисовать красивые кнопки, отрисовывать обычный текст,
-	отрисовывать текстовые поля с возможностью прокрутки, рисовать разделители и прочее.
-	Любой объект выделяется с помощью клика мыши, после чего функция приступает к работе
-	с этим объектом.
+It is a versatile modular function for maximum convenience and fast display
+the information you need. With the help of input data from the keyboard, make choices
+of the options, draw beautiful buttons, draw plain text
+render text fields with the ability to scroll, draw dividers and more.
+Any object stands out with a mouse click, then the function starts to work
+with the object.
  
-Аргументы функции:
+function arguments:
 
-	x и y: это числа, обозначающие стартовые координаты левого верхнего угла данного окна.
-	Вместо цифр вы также можете написать "auto" - и программа автоматически разместит окно
-	по центру экрана по выбранной координате. Или по обеим координатам, если вам угодно.
+	x and y: a number indicating the starting coordinates of the upper left corner of the window.
+	Instead of numbers you can also write "auto" - and the program will automatically place a window
+	centered on the screen of the selected coordinate. Or both coordinates, if you like.
 	 
-	width: это ширина окна, которую вы можете задать по собственному желанию. Если некторые
-	объекты требуют расширения окна, то окно будет автоматически расширено до нужной ширины.
-	Да, вот такая вот тавтология ;)
+	width: is the width of the window, you can select at will. If the ability to make some
+	objects require expansion window, the window will be automatically extended to the desired width.
+	Yes, that's so that's a tautology ;)
 
-	background: базовый цвет окна (цвет фона, кому как понятнее).
+	background: the base color of the window (the background color, as anyone clearer).
 
-	closeWindowAfter: eсли true, то окно по завершению функции будет выгружено, а на его месте
-	отрисуются пиксели, которые имелись на экране до выполнения функции. Удобно, если не хочешь
-	париться с перерисовкой интерфейса.
+	closeWindowAfter: esli true, the window to complete the function will be unloaded, and in its place
+	They are rendered pixels that were on the screen to perform the function. Conveniently, if you do not want
+	soared to redraw the interface.
 
-	... : многоточием тут является перечень объектов, указанных через запятую. Каждый объект
-	является массивом и имеет собственный формат. Ниже перечислены все возможные типы объектов.
+	... : ellipsis here is a list of the objects specified, separated by commas. Each object
+		It is an array and has its own format. Listed below are all the possible types of objects.
 		
-		{"Button", {Цвет кнопки1, Цвет текста на кнопке1, Сам текст1}, {Цвет кнопки2, Цвет текста на кнопке2, Сам текст2}, ...}
+		{"Button", {Color 1c button text color on the button 1, 1 The text}, {Color 2 button, text color on the button 2 The text 2}, ...}
 
-			Это объект для рисования кнопок. Каждая кнопка - это массив, состоящий из трех элементов:
-			цвета кнопки, цвета текста на кнопке и самого текста. Кнопок может быть неограниченное количество,
-			однако чем их больше, тем большее требуется разрешение экрана по ширине.
+			It is an object to draw the buttons. Each button - an array that consists of three elements:
+			color buttons, the color of the text on the button and the text itself. Buttons can be an unlimited number,
+			but more of them, the greater the required width of the screen resolution.
 
-			Интерактивный объект.
+			The interactive object.
 
-		{"Input", Цвет рамки и текста, Цвет при выделении, Стартовый текст [, Маскировать символом]}
+		{"Input", Border color and text color of the allocation, starting text [, mask symbol]}
 
-			Объект для рисования полей ввода текстовой информации. Удобно для открытия или сохранения файлов,
-			Опциональный аргумент "Маскировать символом" полезен, если вы делаете поле для ввода пароля.
-			Никто не увидит ваш текст. В качестве данного аргумента передается символ, например "*".
+			Object drawing input fields of textual information. It is convenient to open and save files,
+			The optional argument "Mask symbol" is useful if you make the password field.
+			No one will see your text. The symbol is transmitted such as this argument "*".
 
-			Интерактивный объект.
+			The interactive object.
 
-		{"Selector", Цвет рамки, Цвет при выделении, Выбор 1, Выбор 2, Выбор 3 ...}
+		{"Selector", Color box, when you select Color, Option 1, Option 2, Option 3 ...}
 
-			Внешне схож с объектом "Input", однако в этом случае вы будете выбирать один из предложенных
-			вариантов из выпадающего списка. По умолчанию выбран первый вариант.
+				Externally similar to the object "Input", but in this case you will choose one of the suggested
+				options from the drop down list. By default, the first option is selected.
 
-			Интерактивный объект.
+			The interactive object.
 
-		{"Select", Цвет рамки, Цвет галочки, Выбор 1, Выбор 2, Выбор 3 ...}
+		{"Select", Color box, color show, Option 1, Option 2, Option 3 ...}
 
-			Объект выбора. Отличается от "Selector" тем, что здесь вы выбираете один из вариантов, отмечая
-			его галочкой. По умолчанию выбран первый вариант.
+			select the object. It differs from the "Selector" because here you choose one of the options, noting
+			it tick. By default, the first option is selected.
 
-			Интерактивный объект. 
+			The interactive object. 
 
-		{"Slider", Цвет линии слайдера, Цвет пимпочки слайдера, Значения слайдера ОТ, Значения слайдера ДО, Текущее значение [, Текст-подсказка ДО] [, Текст-подсказка ПОСЛЕ]}
+		{"Slider", Line Color slider Color pimpochki slider, the value from the slider, the slider values to current values [, Text-to tip] [, Text-tip AFTER]}
 
-			Ползунок, позволяющий задавать определенное количество чего-либо в указанном интервале. Имеются два
-			опциональных аргумента, позволяющих четко понимать, с чем именно мы имеем дело.
+			Slider, allowing to set a certain amount of something in that range. there are two
+			optional arguments that allow a clear understanding of what it is we are dealing with.
 
-			К примеру, если аргумент "Текст-подсказка ДО" будет равен "Съедено ", а аргумент "Текст-подсказка ПОСЛЕ"
-			будет равен " яблок", а значение слайдера будет равно 50, то на экране будет написано "Съедено 50 яблок".
+			For example, if the argument "text-tip to" be equal to "eating" and the argument "text-tip AFTER"
+			equals "apple", and the slider value is 50, then the screen will say "we will eat 50 apples."
 
-			Интерактивный объект.
+			The interactive object.
 
-		{"Switch", Активный цвет, Пассивный цвет, Цвет текста, Текст, Состояние}
+		{"Switch", Active Color, passive color, text color, text, status}
 
-			 Переключатель, принимающий два состояния: true или false. Текст - это всего лишь информация, некое
-			 название данного переключателя.
+			 Switch receiving two states: true or false. Text - this is just information, some
+			 the name of the switch.
 
-			 Интерактивный объект.  
+			 The interactive object. 
 
-		{"CenterText", Цвет текста, Сам текст}
+		{"CenterText", The text color, text itself}
 
-			Отображение текста указанного цвета по центру окна. Чисто для информативных целей.
+			Display text specified color in the middle of the window. Purely for information purposes only.
 
-		{"WrappedText", Цвет текста, Текст}
+		{"WrappedText", The text color, text}
 
-			Отображение большого количества текста с автоматическим переносом. Прото режет слова на кусочки,
-			перенос символический. Чисто для информативных целей.
+			Displaying a large number of text with automatic transfer. Proto words cuts into pieces,
+			symbolic transfer. Purely for information purposes.
  
-        {"TextField", Высота, Цвет фона, Цвет текста, Цвет скроллбара, Цвет пимпочки скроллбара, Сам текст}
+        {"TextField", Height, background color, text color, scrollbar color, color pimpochki scrollbar, the text itself}
  
-        	Текстовое поле с возможностью прокрутки. Отличается от "WrappedText"
-        	фиксированной высотой. Чисто для информативных целей.
+        	A text field with the ability to scroll. It differs from "WrappedText"
+         	fixed height. Purely for information purposes.
    
-        {"Separator", Цвет разделителя}
+        {"Separator", separator Color}
  
-        	Линия-разделитель, помогающая лучше отделять объекты друг от друга. Декоративный объект.
+        	The line separator, which helps to better separate the objects from each other. Decorative object.
  
 		{"EmptyLine"}
  
-        	Пустое пространство, помогающая лучше отделять объекты друг от друга. Декоративный объект.
+        	Empty space, which helps to better separate the objects from each other. Decorative object.
  
-		Каждый из объектов рисуется по порядку сверху вниз. Каждый объект автоматически
-		увеличивает высоту окна до необходимого значения. Если объектов будет указано слишком много -
-		т.е. если окно вылезет за пределы экрана, то программа завершится с ошибкой.
+		Each of the objects is drawn in order from top to bottom. Each object will automatically
+		increases the height of the window to the desired value. If the object is given too much -
+		ie if the window will come out of the screen, the program will fail.
 
-	Что возвращает функция:
+	What is the function returns:
 		
-		Возвратом является массив, пронумерованный от 1 до <количества объектов>.
-		К примеру, 1 индекс данного массива соответствует 1 указанному объекту.
-		Каждый индекс данного массива несет в себе какие-то данные, которые вы
-		внесли в объект во время работы функции.
-		Например, если в 1-ый объект типа "Input" вы ввели фразу "Hello world",
-		то первый индекс в возвращенном массиве будет равен "Hello world".
-		Конкретнее это будет вот так: massiv[1] = "Hello world".
+		Returns an array is numbered from 1 to <number of items>.
+		For example, one index of the array corresponds to one specified object.
+		Each index of the array bears some data that you
+		made into an object while the function.
+		For example, if the first object of type "Input" you enter the phrase "Hello world",
+		the first index of the returned array will be equal to "Hello world".
+		More specifically, it will be like this: massiv [1] = "Hello world".
 
-		Если взаимодействие с объектом невозможно - например, как в случае
-		с EmptyLine, CenterText, TextField или Separator, то в возвращенном
-		массиве этот объект указываться не будет.
+		If an interaction with the object it is impossible - for example, as in the case
+		with EmptyLine, CenterText, TextField or Separator, then returned
+		an array of this object will not be indicated.
 
-		Готовые примеры использования функции указаны ниже и закомментированы.
-		Выбирайте нужный и раскомментируйте.
+		Ready examples of features are listed below and are commented out.
+		Choose the correct and uncomment.
 ]]
 
 --Функция-демонстратор, показывающая все возможные объекты в одном окне. Код окна находится выше.
 --ECSAPI.demoWindow()
 
 --Функция-отладчик, выдающая окно с указанным сообщением об ошибке. Полезна при дебаге.
---ECSAPI.error("Это сообщение об ошибке! Hello world!")
+--ECSAPI.error("This error message! Hello world!")
 
 --Функция, спрашивающая, стоит ли заменять указанный файл, если он уже имеется
 --ECSAPI.askForReplaceFile("OS.lua")
 
 --Функция, предлагающая сохранить файл в нужном месте в нужном формате.
---ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Сохранить как"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Путь"}, {"Selector", 0x262626, 0x880000, "PNG", "JPG", "PSD"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK!"}})
-
+--ECSAPI.universalWindow("auto", "auto", 30, ECSAPI.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Save as"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Way"}, {"Selector", 0x262626, 0x880000, "PNG", "JPG", "PSD"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK!"}})
 
 ----------------------------------------------------------------------------------------------------
-
 ECSAPI.applicationHelp("MineOS/Applications/InfoPanel.app")
 
 return ECSAPI

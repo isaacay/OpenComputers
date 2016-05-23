@@ -19,8 +19,8 @@ modemConnection.receiveMessagesFromTablets = true
 modemConnection.receiveMessagesFromComputers = true
 
 local infoMessages = {
-	userTriesToConnectNoGUI = "Пользователь %s желает установить с вами соединение. Разрешить? Y/N",
-	noModem = "Этой библиотеке требуется сетевая карта для работы",
+	userTriesToConnectNoGUI = "User %s wishes to establish a connection with you. Allow? Y/N",
+	noModem = "This library is required for the network card",
 }
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -58,15 +58,15 @@ end
 local function acceptingOrDecliningDialog(address, accepted)
 	local text1, text2
 	-- if accepted == true then
-	-- 	text1 = "Установлено соединение с пользователем"
+	-- 	text1 = "The link to the user"
 	-- 	text2 = "\"" .. ecs.stringLimit("end", address, 18) .. "\""
 	-- else
 	if accepted == false then
-		text1 = "Пользователь \"" .. ecs.stringLimit("end", address, 12) .. "\" отказался"
-		text2 = "установить с вами соединение."
+		text1 = "User \"" .. ecs.stringLimit("end", address, 12) .. "\" He refused"
+		text2 = "establish the connection with you."
 	elseif accepted == nil then
-		text1 = "Пользователь \"" .. ecs.stringLimit("end", address, 12) .. "\" не ответил"
-		text2 = "на ваш запрос"
+		text1 = "User \"" .. ecs.stringLimit("end", address, 12) .. "\" did not answer"
+		text2 = "to your request"
 	end
 
 	ecs.universalWindow("auto", "auto", 36, 0x262626, true,
@@ -86,15 +86,15 @@ local function askForAcceptConnection(address)
 			{"EmptyLine"},
 			{"CenterText", ecs.colors.orange, "WirelessConnection"},
 			{"EmptyLine"},
-			{"CenterText", 0xffffff, "Пользователь \"" .. ecs.stringLimit("end", address, 12) .. "\" желает" },
-			{"CenterText", 0xffffff, "установить с вами беспроводное соединение." },
+			{"CenterText", 0xffffff, "User \"" .. ecs.stringLimit("end", address, 12) .. "\" wants" },
+			{"CenterText", 0xffffff, "to establish with you a wireless connection." },
 			{"EmptyLine"},
-			{"CenterText", 0xffffff, "Разрешить подключение?" },
+			{"CenterText", 0xffffff, "Allow the connection?" },
 			{"EmptyLine"},
-			{"Button", {ecs.colors.orange, 0x262626, "Да"}, {0x999999, 0xffffff, "Нет"}}
+			{"Button", {ecs.colors.orange, 0x262626, "Yes"}, {0x999999, 0xffffff, "No"}}
 		)
 
-		if data[1] == "Да" then
+		if data[1] == "Yes" then
 			modemConnection.remoteAddress = address
 			sendAcceptingMessage(address)
 			computer.pushSignal("connectionEstabilishedExitFromGUI")
@@ -104,13 +104,13 @@ local function askForAcceptConnection(address)
 	else
 		term.clear()
 		term.setCursor(1, 1)
-		print("Пользователь \"" .. string.sub(address, 1, 12) .. "\" желает установить с вами беспроводное соединение. Разрешить подключение? Y/N")
+		print("User \"" .. string.sub(address, 1, 12) .. "\" It wants to establish with you a wireless connection. Allow the connection? Y/N")
 		local answer = term.read()
 		if string.sub(string.lower(answer), 1, 1) == "y" then
 			modemConnection.remoteAddress = address
 			sendAcceptingMessage(address)
 			print(" ")
-			print("Соединение установлено.")
+			print("The connection is established.")
 			print(" ")
 			-- computer.pushSignal("key_down", component.getPrimary("keyboard").address, 13, 28, "ECS")
 		else
@@ -124,45 +124,45 @@ end
 local function infoAboutClient(userData)
 
 	local arguments = {
-		"auto", "auto", 36, 0x262626, true, {"EmptyLine"}, {"CenterText", ecs.colors.orange, "Информация о пользователе"}, {"EmptyLine"},
+		"auto", "auto", 36, 0x262626, true, {"EmptyLine"}, {"CenterText", ecs.colors.orange, "User information"}, {"EmptyLine"},
 	}
 
 	if userData.isRobot then
-		table.insert(arguments, {"CenterText", 0xffffff, "Тип: робот"})
+		table.insert(arguments, {"CenterText", 0xffffff, "Type: robot"})
 	elseif userData.isTablet then
-		table.insert(arguments, {"CenterText", 0xffffff, "Тип: планшет"})
+		table.insert(arguments, {"CenterText", 0xffffff, "Type: Tablet"})
 	elseif not userData.isTablet and not userData.isRobot then
-		table.insert(arguments, {"CenterText", 0xffffff, "Тип: компьютер"})
+		table.insert(arguments, {"CenterText", 0xffffff, "Type: Computer"})
 	end
 
-	table.insert(arguments, {"CenterText", 0xffffff, "Имя: " .. userData.name})
-	table.insert(arguments, {"CenterText", 0xffffff, "Адрес: " .. ecs.stringLimit("end", userData.address, 12)})
-	table.insert(arguments, {"CenterText", 0xffffff, "Память: " .. userData.ram .. " KB"})
+	table.insert(arguments, {"CenterText", 0xffffff, "Name: " .. userData.name})
+	table.insert(arguments, {"CenterText", 0xffffff, "Address: " .. ecs.stringLimit("end", userData.address, 12)})
+	table.insert(arguments, {"CenterText", 0xffffff, "Memory: " .. userData.ram .. " KB"})
 
 	if userData.isTablet or userData.isRobot and userData.hasUpgrades then
 		table.insert(arguments, {"EmptyLine"})
-		table.insert(arguments, {"CenterText", ecs.colors.orange, "Улучшения"})
+		table.insert(arguments, {"CenterText", ecs.colors.orange, "improvements"})
 		table.insert(arguments, {"EmptyLine"})
 		if userData.inventoryController then
-			table.insert(arguments, {"CenterText", 0xffffff, "Контроллер инвентаря"})
+			table.insert(arguments, {"CenterText", 0xffffff, "inventory controller"})
 		end
 		if userData.tankController then
-			table.insert(arguments, {"CenterText", 0xffffff, "Контроллер бака"})
+			table.insert(arguments, {"CenterText", 0xffffff, "tank controller"})
 		end
 		if userData.crafting then
-			table.insert(arguments, {"CenterText", 0xffffff, "Крафтинг"})
+			table.insert(arguments, {"CenterText", 0xffffff, "Crafting"})
 		end
 		if userData.redstone then
-			table.insert(arguments, {"CenterText", 0xffffff, "Редстоун-плата"})
+			table.insert(arguments, {"CenterText", 0xffffff, "Redstone-charge"})
 		end
 		if userData.navigation then
-			table.insert(arguments, {"CenterText", 0xffffff, "Навигация"})
+			table.insert(arguments, {"CenterText", 0xffffff, "Navigation"})
 		end
 		if userData.piston then
-			table.insert(arguments, {"CenterText", 0xffffff, "Поршень"})
+			table.insert(arguments, {"CenterText", 0xffffff, "Piston"})
 		end
 		if userData.geolyzer then
-			table.insert(arguments, {"CenterText", 0xffffff, "Геоанализатор"})
+			table.insert(arguments, {"CenterText", 0xffffff, "Bioanalyzer"})
 		end
 	end
 
@@ -335,8 +335,8 @@ local function drawSelectedIcon(x, y, background, foreground, userData)
 	local oldPixels = ecs.rememberOldPixels(x - skokaOtnat, y, x + selectionWidth - 2, y + 13)
 	ecs.square(x - skokaOtnat, y, selectionWidth, 8, background)
 	drawIconAndAddress(x, y + 1, background, foreground, userData)
-	obj.CykaKnopkaInfo = { ecs.drawButton(x - skokaOtnat, y + 8, selectionWidth, 3, "Информация", 0xff6699, 0xFFFFFF) }
-	obj.CykaKnopkaConnect = { ecs.drawButton(x - skokaOtnat, y + 11, selectionWidth, 3, "Подключиться", 0xff3333, 0xFFFFFF) }
+	obj.CykaKnopkaInfo = { ecs.drawButton(x - skokaOtnat, y + 8, selectionWidth, 3, "Information", 0xff6699, 0xFFFFFF) }
+	obj.CykaKnopkaConnect = { ecs.drawButton(x - skokaOtnat, y + 11, selectionWidth, 3, "connect", 0xff3333, 0xFFFFFF) }
 	obj.CykaKnopkaConnect.address = userData.address
 	return oldPixels
 end
@@ -378,17 +378,17 @@ local function connectionGUI()
 					
 					if obj.CykaKnopkaInfo and obj.CykaKnopkaConnect then
 						if ecs.clickedAtArea(e[3], e[4], obj.CykaKnopkaInfo[1], obj.CykaKnopkaInfo[2], obj.CykaKnopkaInfo[3], obj.CykaKnopkaInfo[4]) then
-							ecs.drawButton(obj.CykaKnopkaInfo[1], obj.CykaKnopkaInfo[2], 16, 3, "Информация", 0x262626, 0xFFFFFF)
+							ecs.drawButton(obj.CykaKnopkaInfo[1], obj.CykaKnopkaInfo[2], 16, 3, "Information", 0x262626, 0xFFFFFF)
 							os.sleep(0.2)
 							if oldPixels then ecs.drawOldPixels(oldPixels); oldPixels = nil end
 							infoAboutClient(modemConnection.availableUsers[obj.CykaKnopkaConnect.address])
 
 						elseif ecs.clickedAtArea(e[3], e[4], obj.CykaKnopkaConnect[1], obj.CykaKnopkaConnect[2], obj.CykaKnopkaConnect[3], obj.CykaKnopkaConnect[4]) then
-							ecs.drawButton(obj.CykaKnopkaConnect[1], obj.CykaKnopkaConnect[2], 16, 3, "Подключиться", 0x262626, 0xFFFFFF)
+							ecs.drawButton(obj.CykaKnopkaConnect[1], obj.CykaKnopkaConnect[2], 16, 3, "connect", 0x262626, 0xFFFFFF)
 							os.sleep(0.2)
 							if oldPixels then ecs.drawOldPixels(oldPixels); oldPixels = nil end
 
-							local oldInfoPixels = ecs.info("auto", "auto", "", "Ожидание ответа от пользователя...")							
+							local oldInfoPixels = ecs.info("auto", "auto", "", "Waiting for a response from the user...")							
 							tryToConnect(obj.CykaKnopkaConnect.address)
 
 							local function filter(name, _, remoteAddress)
