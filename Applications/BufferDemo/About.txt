@@ -1,1 +1,1 @@
-Программа-демонстратор возможностей нашей библиотеки двойной буферизации изображения. Вся ОС работает именно на этой библиотеке.
+﻿Program Presenter features double buffering images to our library. The entire OS is running on the library.

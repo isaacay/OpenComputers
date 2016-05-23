@@ -66,14 +66,14 @@ function scale.set(scale, debug)
 	--Выводим инфу, если нужно
 	if debug then
 		print(" ")
-		print("Maximum resolution: "..xMax.."x"..yMax)
-		print("proportion monitor: "..xPixels.."x"..yPixels)
-		print("factor proportions: "..proportion)
+		print("Максимальное разрешение: "..xMax.."x"..yMax)
+		print("Пропорция монитора: "..xPixels.."x"..yPixels)
+		print("Коэффициент пропорции: "..proportion)
 		print(" ")
-		print("Theoretical resolution: "..newWidth.."x"..newHeight)
-		print("Optimized resolution: "..optimalNewWidth.."x"..optimalNewHeight)
+		print("Теоретическое разрешение: "..newWidth.."x"..newHeight)
+		print("Оптимизированное разрешение: "..optimalNewWidth.."x"..optimalNewHeight)
 		print(" ")
-		print("New resolution: "..finalNewWidth.."x"..finalNewHeight)
+		print("Новое разрешение: "..finalNewWidth.."x"..finalNewHeight)
 		print(" ")
 	end
 

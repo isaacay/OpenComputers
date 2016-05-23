@@ -1,1 +1,1 @@
-Демонстрационная программа, генерирующая всем известный "дождь" из символов из не менее известного фильма "Матрица". Идеально вписывается в любой интерьер.
+﻿Demonstration program, generating well-known "rain" of characters from the no less famous film "The Matrix". Ideal fit into any interior.

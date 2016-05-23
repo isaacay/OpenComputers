@@ -99,7 +99,7 @@ local currentBrushSize = 1
 local savePath
 
 --Верхний тулбар
-local topToolbar = {{"PS", ecs.colors.blue}, {"File"}, {"Picture"}, {"Instruments"}, {"About the program"}}
+local topToolbar = {{"PS", ecs.colors.blue}, {"Файл"}, {"Изображение"}, {"Инструменты"}, {"О программе"}}
 
 ------------------------------------------------ Функции отрисовки --------------------------------------------------------------
 
@@ -184,7 +184,7 @@ end
 
 local function drawTopBar()
 
-	local topBarInputs = { {"brush Size", currentBrushSize}, {"Transparency", math.floor(currentAlpha)}}
+	local topBarInputs = { {"Размер кисти", currentBrushSize}, {"Прозрачность", math.floor(currentAlpha)}}
 
 	ecs.square(1, 2, sizes.xSize, sizes.heightOfTopBar, colors.toolbar)
 	local xPos, yPos = 3, 3
@@ -298,7 +298,7 @@ local function drawAll()
 	--Очищаем экран
 	ecs.prepareToExit()
 	--И консольку!
-	console("The entire interface is drawn!")
+	console("Весь интерфейс перерисован!")
 	--Рисуем тулбары
 	drawBackground()
 	drawLeftBar()
@@ -336,7 +336,7 @@ local function swapColors()
 	currentBackground = tempColor
 	tempColor = nil
 	drawColors()
-	console("The colors are reversed.")
+	console("Цвета поменяны местами.")
 end
 
 local function inputText(x, y, limit)
@@ -492,7 +492,7 @@ local function blackAndWhite()
 end
 
 local function new()
-	local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, false, {"EmptyLine"}, {"CenterText", 0x262626, "new document"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Width"}, {"Input", 0x262626, 0x880000, "Height"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Ok!"}})
+	local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, false, {"EmptyLine"}, {"CenterText", 0x262626, "Новый документ"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Ширина"}, {"Input", 0x262626, 0x880000, "Высота"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Ok!"}})
 
 	data[1] = tonumber(data[1]) or 51
 	data[2] = tonumber(data[2]) or 19
@@ -615,14 +615,14 @@ while true do
 						brush(x, y, currentBackground, currentForeground, currentAlpha, currentSymbol)
 
 						--Пишем что-то в консоли
-						console("Brush: Click on a point "..e[3].."x"..e[4]..", coordinates in the image: "..x.."x"..y..", array image index: "..iterator)
+						console("Кисть: клик на точку "..e[3].."x"..e[4]..", координаты в изображении: "..x.."x"..y..", индекс массива изображения: "..iterator)
 					end
 				--Ластик
 				elseif currentInstrument == 2 then
 
 					brush(x, y, currentBackground, currentForeground, 0xFF, currentSymbol)
 
-					console("Eraser: click on point "..e[3].."x"..e[4]..", coordinates in the image: "..x.."x"..y..", array image index: "..iterator)
+					console("Ластик: клик на точку "..e[3].."x"..e[4]..", координаты в изображении: "..x.."x"..y..", индекс массива изображения: "..iterator)
 
 				--Текст
 				elseif currentInstrument == 4 then
@@ -678,63 +678,63 @@ while true do
 					ecs.colorText(obj["TopMenu"][key][1], obj["TopMenu"][key][2], 0xffffff, key)
 					local action
 					
-					if key == "File" then
-						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"New"}, {"Open"}, "-", {"retain", (savePath == nil)}, {"Save as"}, "-", {"Exit"})
-					elseif key == "Picture" then
-						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"Flip Horizontal"}, {"Flip Vertical"}, "-", {"Invert colors"}, {"Black & White filter"})
-					elseif key == "Instruments" then
-						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"Brush"}, {"Eraser"}, {"fill"}, {"Text"})
+					if key == "Файл" then
+						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"Новый"}, {"Открыть"}, "-", {"Сохранить", (savePath == nil)}, {"Сохранить как"}, "-", {"Выход"})
+					elseif key == "Изображение" then
+						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"Отразить по горизонтали"}, {"Отразить по вертикали"}, "-", {"Инвертировать цвета"}, {"Черно-белый фильтр"})
+					elseif key == "Инструменты" then
+						action = context.menu(obj["TopMenu"][key][1] - 1, obj["TopMenu"][key][2] + 1, {"Кисть"}, {"Ластик"}, {"Заливка"}, {"Текст"})
 					elseif key == "О программе" then
-						ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Photoshop v3.0 (public beta)"}, {"EmptyLine"}, {"CenterText", 0x262626, "Authors:"}, {"CenterText", 0x555555, "    "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "}, {"EmptyLine"}, {"CenterText", 0x262626, "Testers: "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "}, {"CenterText", 0x656565, "    "},  {"CenterText", 0x656565, "    "}, {"EmptyLine"},{"Button", {0xbbbbbb, 0xffffff, "OK"}})
+						ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Photoshop v3.0 (public beta)"}, {"EmptyLine"}, {"CenterText", 0x262626, "Авторы:"}, {"CenterText", 0x555555, "Тимофеев Игорь"}, {"CenterText", 0x656565, "vk.com/id7799889"}, {"CenterText", 0x656565, "Трифонов Глеб"}, {"CenterText", 0x656565, "vk.com/id88323331"}, {"EmptyLine"}, {"CenterText", 0x262626, "Тестеры:"}, {"CenterText", 0x656565, "Шестаков Тимофей"}, {"CenterText", 0x656565, "vk.com/id113499693"}, {"CenterText", 0x656565, "Вечтомов Роман"}, {"CenterText", 0x656565, "vk.com/id83715030"}, {"CenterText", 0x656565, "Омелаенко Максим"},  {"CenterText", 0x656565, "vk.com/paladincvm"}, {"EmptyLine"},{"Button", {0xbbbbbb, 0xffffff, "OK"}})
 					end
 
-					if action == "Exit" then
+					if action == "Выход" then
 						ecs.prepareToExit()
 						return
-					elseif action == "Flip Horizontal" then
+					elseif action == "Отразить по горизонтали" then
 						doFlip(true)
-					elseif action == "Flip Vertical" then
+					elseif action == "Отразить по вертикали" then
 						doFlip(false)
-					elseif action == "Invert colors" then
+					elseif action == "Инвертировать цвета" then
 						invertColors()
-					elseif action == "Black & White filter" then
+					elseif action == "Черно-белый фильтр" then
 						blackAndWhite()
-					elseif action == "Eraser" then
+					elseif action == "Ластик" then
 						currentInstrument = 2
 						drawInstruments()
-					elseif action == "Brush" then
+					elseif action == "Кисть" then
 						currentInstrument = 1
 						drawInstruments()
-					elseif action == "Text" then
+					elseif action == "Текст" then
 						currentInstrument = 4
 						drawInstruments()
-					elseif action == "fill" then
+					elseif action == "Заливка" then
 						currentInstrument = 3
 						drawInstruments()
-					elseif action == "New" then
+					elseif action == "Новый" then
 						new()
 
-					elseif action == "Save as" then
-						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Save as"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Path to"}, {"Selector", 0x262626, 0x880000, ".PIC", ".RAWPIC"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+					elseif action == "Сохранить как" then
+						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Сохранить как"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Путь"}, {"Selector", 0x262626, 0x880000, ".PIC", ".RAWPIC"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 						data[1] = data[1] or "Untitled"
 						data[2] = unicode.lower(data[2] or "PIC")
 						local fileName = data[1]..data[2]
 						image.save(fileName, masterPixels)
 						savePath = fileName
 
-					elseif action == "retain" then
+					elseif action == "Сохранить" then
 						image.save(savePath, masterPixels)
 
-					elseif action == "Open" then
-						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Open"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Path to"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
+					elseif action == "Открыть" then
+						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Открыть"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Путь"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}})
 						local fileFormat = ecs.getFileFormat(data[1])
 					
 						if not data[1] then
-							ecs.error("Incorrect file name!")
+							ecs.error("Некорректное имя файла!")
 						elseif not fs.exists(data[1]) then
-							ecs.error("File\""..data[1].."\" does not exist!")
+							ecs.error("Файл\""..data[1].."\" не существует!")
 						elseif fileFormat ~= ".pic" and fileFormat ~= ".rawpic" then 
-							ecs.error("File format \""..fileFormat.."\" not supported!")
+							ecs.error("Формат файла \""..fileFormat.."\" не поддерживается!")
 						else
 							masterPixels = image.load(data[1])
 							reCalculateImageSizes()
@@ -776,7 +776,7 @@ while true do
 				if y + height >= sizes.ySize then y = sizes.ySize - height end
 				if x + width + 1 >= sizes.xSize then x = sizes.xSize - width - 1 end
 
-				currentBrushSize, currentAlpha = table.unpack(ecs.universalWindow(x, y, width, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "brush Options"}, {"Slider", 0x262626, 0x880000, 1, 10, currentBrushSize, "size: ", " px"}, {"Slider", 0x262626, 0x880000, 0, 255, currentAlpha, "Transparency: ", ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}}))
+				currentBrushSize, currentAlpha = table.unpack(ecs.universalWindow(x, y, width, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Параметры кисти"}, {"Slider", 0x262626, 0x880000, 1, 10, currentBrushSize, "Размер: ", " px"}, {"Slider", 0x262626, 0x880000, 0, 255, currentAlpha, "Прозрачность: ", ""}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK"}}))
 				drawTopBar()
 			end
 		end

@@ -4,7 +4,7 @@ local event = require("event")
 local camera
 
 if not component.isAvailable("camera") then
-	ecs.error("Этой программе требуется камера из мода Computronix.")
+	ecs.error("This program requires a camera of fashion Computronix.")
 	return
 else
 	camera = component.camera
@@ -71,14 +71,14 @@ local topObjects
 local currentTopObject = 0
 
 local function gui()
-	topObjects = ecs.drawTopMenu(1, 1, widthOfImage, 0xeeeeee, currentTopObject, {"Камера", 0x000000}, {"Сделать снимок", 0x444444}, {"Параметры рендера", 0x444444}, {"Палитра", 0x444444})
+	topObjects = ecs.drawTopMenu(1, 1, widthOfImage, 0xeeeeee, currentTopObject, {"Camera", 0x000000}, {"To take a photo", 0x444444}, {"render Settings", 0x444444}, {"Palette", 0x444444})
 end
 
 local function capture(x, y)
 	local xPos, yPos = x, y
 	local distance, color
 
-	local oldPixels = ecs.info("auto", "auto", " ", "     Делаю снимок...     ")
+	local oldPixels = ecs.info("auto", "auto", " ", "     snapshot...     ")
 
 	for y = from, -from, -step do
 		for x = -from, from, step do
@@ -137,33 +137,33 @@ while true do
 				currentTopObject = topObjects[key][5]
 				gui()
 
-				if key == "Камера" then
+				if key == "Camera" then
 
-					local action = context.menu(topObjects[key][1] - 1, 2, {"О программе"}, {"Выход"})
+					local action = context.menu(topObjects[key][1] - 1, 2, {"About the program"}, {"Exit"})
 
-					if action == "О программе" then
+					if action == "About the program" then
 
-						local text = "Эта программа является тестом библиотеки двойной буферизации изображения, написана для проверки адекватности нескольких функций. Сама идея сперта у какого-то крутого парня с форума CC, однако немного доработана в GUI-плане. Такие дела."
+						local text = "This program is a test library dual image buffer, is written to check the adequacy of some functions. The idea stale in some tough guy from the forum CC, but a bit modified in the GUI-term. So it goes."
 						
-						ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "О программе \"Камера\""}, {"EmptyLine"}, {"TextField", 9, 0xFFFFFF, 0x000000, 0xaaaaaa, ecs.colors.blue, text}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
+						ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "About the program \"Camera\""}, {"EmptyLine"}, {"TextField", 9, 0xFFFFFF, 0x000000, 0xaaaaaa, ecs.colors.blue, text}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
 
-					elseif action == "Выход" then
+					elseif action == "Exit" then
 						gpu.setResolution(xOld, yOld)
 						ecs.prepareToExit()
 						return
 					end
 
-				elseif key == "Сделать снимок" then
+				elseif key == "To take a photo" then
 					capture(1, 1)
 					drawDistanceMeter()
 					buffer.draw()
 					gui()
-				elseif key == "Параметры рендера" then
+				elseif key == "render Settings" then
 					
-					local action = context.menu(topObjects[key][1] - 1, 2, {"Масштаб"}, {"Дальность рейкастинга"})
+					local action = context.menu(topObjects[key][1] - 1, 2, {"Scale"}, {"Range Settings"})
 
-					if action == "Масштаб" then
-						local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "Изменить масштаб:"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 1, 100, 100, "", "%"}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
+					if action == "Scale" then
+						local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "Change the scale:"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 1, 100, 100, "", "%"}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
 						
 						local part = (0.04 - 0.01) / 100
 						local percent = part * data[1]
@@ -175,8 +175,8 @@ while true do
 						drawDistanceMeter()
 						buffer.draw()
 						gui()
-					elseif action == "Дальность рейкастинга" then
-						local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "Изменить дальность:"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 10, 36, distanceLimit, "", " блоков"}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
+					elseif action == "Range Settings" then
+						local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x000000, "Change the range:"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 10, 36, distanceLimit, "", " blocks"}, {"EmptyLine"}, {"Button", {0x999999, 0xffffff, "OK"}})
 
 						distanceLimit = data[1]
 
@@ -186,17 +186,17 @@ while true do
 						gui()
 					end
 
-				elseif key == "Палитра" then
+				elseif key == "Palette" then
 					
-					local action = context.menu(topObjects[key][1] - 1, 2, {"Черно-белая"}, {"Термальная"})
+					local action = context.menu(topObjects[key][1] - 1, 2, {"Black and White"}, {"thermal"})
 
-					if action == "Черно-белая" then
+					if action == "Black and White" then
 						currentPalette = grayScale
 						capture(1, 1)
 						drawDistanceMeter()
 						buffer.draw()
 						gui()
-					elseif action == "Термальная" then
+					elseif action == "thermal" then
 						currentPalette = rainbow
 						capture(1, 1)
 						drawDistanceMeter()

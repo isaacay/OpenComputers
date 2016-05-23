@@ -12,7 +12,7 @@ local gpu = components.gpu
 local chat = components.chat_box
 local redstone = component.redstone
 
-local administrators = {"IT", "Pornogion"}
+local administrators = {"", ""}
 
 local votes = {
 	mute = {
@@ -57,11 +57,11 @@ end
 local function analyzeMutes()
 	for nameToMute in pairs(votes.mute) do
 		if getCount(votes.mute[nameToMute]) >= votesToDoSomething then			
-			tellraw("@a","По решению большинства игроку " .. nameToMute .. " дан мут.")	
+			tellraw("@a","By the decision of the majority of players " .. nameToMute .. " given Mute.")	
 			execute("/mute " .. nameToMute)
 			votes.mute[nameToMute] = nil
 		else
-			tellraw("@a", "Голосование за кик игрока " .. nameToMute .. " отменяется, недостаточно голосов.")
+			tellraw("@a", "Voting for the kick Player " .. nameToMute .. " canceled, not enough votes.")
 			votes.mute[nameToMute] = nil
 		end
 	end
@@ -82,7 +82,7 @@ local function checkNicknameForAdminRights(nickname)
 	end
 
 	if not success then
-		tellraw("@a[name=" .. nickname .. "]", "Только админстраторы сервера имеют доступ к данной команде.")
+		tellraw("@a[name=" .. nickname .. "]", "Only server administrators have access to this command.")
 	end
 
 	return success
@@ -92,8 +92,8 @@ end
 
 ecs.setScale(0.8)
 ecs.prepareToExit()
-tellraw("@a","Система поддержки чата инициализирована.")
-print(" "); print(" Ожидаю команд игроков..."); print(" ")
+tellraw("@a","The system is initialized chat support.")
+print(" "); print(" I am waiting for players teams..."); print(" ")
 
 
 while true do

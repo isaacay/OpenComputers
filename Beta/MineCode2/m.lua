@@ -79,7 +79,7 @@ local function readFile(path)
 		end
 		file:close()
 	else
-		ecs.error("The file does not exist!")
+		ecs.error("Файл не существует!")
 	end
 
 	return massivStrok
@@ -92,9 +92,9 @@ local function drawInfoPanel()
 	buffer.square(x, y, width, 3, constants.colors.infoPanel, 0x000000, " ")
 	
 	local textArray = {
-		"File: " .. pathToFile,
-		"Size: " .. fileSize .. " KB",
-		"position the cursor: " .. xCursor .. "x" .. yCursor,
+		"Файл: " .. pathToFile,
+		"Размер: " .. fileSize .. " KB",
+		"Позиция курсора: " .. xCursor .. "x" .. yCursor,
 	}
 
 	for i = 1, #textArray do
@@ -131,10 +131,10 @@ local function drawTopMenu()
 	buffer.square(x, y, buffer.screen.width, 1, constants.colors.topMenu, 0x000000, " ")
 	
 	local buttonNames = {
-		"File",
-		"correction",
-		"View",
-		"About the program"
+		"Файл",
+		"Правка",
+		"Вид",
+		"О программе"
 	}
 
 	for i = 1, #buttonNames do
@@ -155,12 +155,12 @@ local function launch()
 		local success, reason = pcall(callback)
 		if success then
 			ecs.prepareToExit()
-			print("The program is successfully completed!")
+			print("Программа успешно выполнена!")
 		else
-			ecs.error("Error during program execution: " .. reason)
+			ecs.error("Ошибка при выполнении программы: " .. reason)
 		end
 	else
-		ecs.error("Error when starting the program: " .. reason)
+		ecs.error("Ошибка при запуске программы: " .. reason)
 	end
 end
 

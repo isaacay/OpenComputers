@@ -219,8 +219,8 @@ function event.pullFiltered(...)
             --Если у нас запрашивают управление
             if command == "iWantToControl" then
               --Спрашиваем на данном компе, разрешить ли управлять им
-              local data = ecs.universalWindow("auto", "auto", 46, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "RCON"}, {"EmptyLine"}, {"CenterText", 0x262626, "A computer "..ecs.stringLimit("end", remoteAddress, 8).." requests management"}, {"EmptyLine"}, {"Button", {0x880000, 0xffffff, "solve"}, {0xbbbbbb, 0xffffff, "reject"}})
-              if data[1] == "solve" then
+              local data = ecs.universalWindow("auto", "auto", 46, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "RCON"}, {"EmptyLine"}, {"CenterText", 0x262626, "Копьютер "..ecs.stringLimit("end", remoteAddress, 8).." запрашивает управление"}, {"EmptyLine"}, {"Button", {0x880000, 0xffffff, "Разрешить"}, {0xbbbbbb, 0xffffff, "Отклонить"}})
+              if data[1] == "Разрешить" then
                 component.modem.send(remoteAddress, port, "RCON", "acceptControl")
                 --Разрешаем коннект
                 _G.RCON = true
@@ -243,7 +243,7 @@ function event.pullFiltered(...)
               computer.shutdown(true)
             elseif command == "key_down" then
               computer.pushSignal("key_down", component.getPrimary("keyboard").address, signal[8], signal[9], signal[10])
-              --print("Jetty blow HyperX Down ", component.getPrimary("keyboard").address, signal[8], signal[9], signal[10])
+              --print("Пушу ивент кей довн ", component.getPrimary("keyboard").address, signal[8], signal[9], signal[10])
             elseif command == "touch" then
               computer.pushSignal("touch", remoteAddress, signal[8], signal[9], signal[10], signal[11])
             elseif command == "scroll" then
@@ -251,7 +251,7 @@ function event.pullFiltered(...)
             elseif command == "clipboard" then
               computer.pushSignal("clipboard", remoteAddress, signal[8], signal[9])
             elseif command == "closeConnection" then
-              ecs.error("Client under ID "..remoteAddress.." I disconnected. I closed network RCON.")
+              ecs.error("Клиент под ID "..remoteAddress.." отключился. Закрываю сеть RCON.")
               _G.RCON = nil
             end
           end

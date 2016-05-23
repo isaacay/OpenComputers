@@ -17,18 +17,18 @@ local countOfDays = {
 }
 
 local months = {
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Январь",
+  "Февраль",
+  "Март",
+  "Апрель",
+  "Май",
+  "Июнь",
+  "Июль",
+  "Август",
+  "Сентябрь",
+  "Октябрь",
+  "Ноябрь",
+  "Декабрь",
 }
 
 local monthDateMove = {
@@ -75,7 +75,7 @@ local function drawMonth(x, y, firstDay, countOfDays, year, month)
   local startDrawing = false
   local separator = string.rep(" ", 2)
   ecs.colorText(x, y, constants.monthsColor, months[month])
-  ecs.colorText(x, y + 2, constants.dayNamesColor,"Mon"..separator.."Tues"..separator.."Wen"..separator.."Thu"..separator.."Fri"..separator.."Sat"..separator.."Sun")
+  ecs.colorText(x, y + 2, constants.dayNamesColor,"Пн"..separator.."Вт"..separator.."Ср"..separator.."Чт"..separator.."Пт"..separator.."Сб"..separator.."Вс")
   for j = 1, 6 do
     xPos = x
     for i = 1, 7 do
@@ -162,11 +162,11 @@ local function polu4itDenNedeliPervogoJanvarja(year, debug)
   end
 
   if debug then
-    print("Year: "..year)
-    print("Disparity in years: "..difference)
-    print("Number of leap: "..koli4estvoVisokosnih)
-    print("The shift by day: "..sdvig)
-    print("Day of the week: "..den)
+    print("Год: "..year)
+    print("Разница в годах: "..difference)
+    print("Кол-во високосных: "..koli4estvoVisokosnih)
+    print("Сдвиг по дням: "..sdvig)
+    print("День недели: "..den)
     print(" ")
   end
 

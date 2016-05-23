@@ -29,12 +29,12 @@ for z=1,1 do
 end
 
 local ending = mem()
-print("Всего доступно "..math.floor(c.totalMemory()/1024).."КБ оперативки")
+print("Total available "..math.floor(c.totalMemory()/1024).."КБ RAM")
 print(" ")
-print("До отрисовки заюзано "..start.."КБ оперативки")
-print("Начинаю отрисовку одного изображения...")
-print("После отрисовки заюзано "..ending.."КБ оперативки")
+print("Before rendering zayuzat "..start.."КБ RAM")
+print("I start drawing a picture...")
+print("After drawing zayuzat "..ending.."КБ RAM")
 print(" ")
-local say = "слоем"
-if tonumber(historySize) > 1 then say = "слоями" end
-print("Вывод: изображение размером "..width.."x"..height.." с "..historySize.." "..say.." схавает "..((ending-start)*historySize).."КБ оперативки")
+local say = "bed"
+if tonumber(historySize) > 1 then say = "layers" end
+print("Conclusion: The size of the image "..width.."x"..height.." с "..historySize.." "..say.." shavaet "..((ending-start)*historySize).."КБ RAM")

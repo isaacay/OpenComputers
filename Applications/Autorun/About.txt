@@ -1,1 +1,1 @@
-Это менеджер автозагрузки, позволяющий добавлять любые файлы в очередь загрузки при старте компьютера. Имеется возможность назначать приоритет загрузки, включать и отключать выбранные скрипты, и, разумеется, удалять уже существующие.
+﻿This is a startup manager that allows you to add any files to the download queue when the computer starts. It is possible to assign the boot priority, enable or disable the selected scripts, and, of course, delete existing ones.

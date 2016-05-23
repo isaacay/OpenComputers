@@ -4,7 +4,7 @@ local robotAPI = require("robotAPI")
 local inventory = component.inventory_controller
 
 local args = { ... }
-if #args < 3 then print(" "); print("Использование: diamonds <длина> <высота> <ширина>"); print(" "); return end
+if #args < 3 then print(" "); print("Use: diamonds <length> <height> <width>"); print(" "); return end
 
 local length = args[1]
 local height = args[2]

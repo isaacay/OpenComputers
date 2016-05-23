@@ -17,9 +17,9 @@ while true do
 	if counter > 50 then
 		local durability = robot.durability() or 500000000
 		counter = 0
-		print("Текущая экспа: " .. robot.level())
-		print("Текущий слот: " .. currentToolSlot)
-		print("Текущая прочность: " .. durability)
+		print("Current exp: " .. robot.level())
+		print("Current slot: " .. currentToolSlot)
+		print("Current strength: " .. durability)
 		print(" ")
 		if durability < 0.1 then
 			currentToolSlot = currentToolSlot + 1

@@ -52,7 +52,7 @@ local function drawTablicu(y, users)
 
 	local yPos = y
 	ecs.square(x, yPos, width, 1, ecs.colors.blue)
-	ecs.colorText(x + 1, yPos, 0xffffff, "users ("..#users.." of "..limit..")")
+	ecs.colorText(x + 1, yPos, 0xffffff, "Пользователи ("..#users.." из "..limit..")")
 
 	yPos = yPos + 1
 	ecs.square(x, yPos, width, limit * 2 - 1, 0xffffff)
@@ -197,7 +197,7 @@ local function stage5()
 	image.draw(xCenter - 17, y + 2, Love)
 
 	local yPos = y + height - 6
-	--gpu.setForeground(ecs.windowColors.usualText); gpu.setBackground(ecs.windowColors.background); ecs.centerText("x", yPos, "All is ready!")
+	--gpu.setForeground(ecs.windowColors.usualText); gpu.setBackground(ecs.windowColors.background); ecs.centerText("x", yPos, "Все готово!")
 	yPos = yPos + 2
 
 	local name
@@ -261,10 +261,10 @@ local function stagePasswordProtection()
 			if password[1] ~= nil then
 				return password[1]
 			else
-				ecs.error("The password must contain at least one character.")
+				ecs.error("Пароль должен состоять хотя бы из одного символа.")
 			end
 		else
-			ecs.error("Passwords are different!")
+			ecs.error("Пароли различаются!")
 		end
 	end
 end

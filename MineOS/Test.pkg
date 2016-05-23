@@ -41,7 +41,7 @@ archive.debugMode = true
 if args[1] == "pack" then
 	if not args[2] or not args[3] then
 		print(" ")
-		print("Use : archive pack < file name> < archived folder>")
+		print("Использование: archive pack <имя архива> <архивируемая папка>")
 		print(" ")
 		return
 	end 
@@ -49,7 +49,7 @@ if args[1] == "pack" then
 elseif args[1] == "unpack" then
 	if not args[2] or not args[3] then
 		print(" ")
-		print("Use : archive unpack < path to file > <folder for saving files >")
+		print("Использование: archive unpack <путь к архиву> <папка для сохранения файлов>")
 		print(" ")
 		return
 	end
@@ -57,18 +57,18 @@ elseif args[1] == "unpack" then
 elseif args[1] == "download" then
 	if not args[2] or not args[3] then
 		print(" ")
-		print("Use : archive download <URL- link to the file > <folder for saving files >")
+		print("Использование: archive download <URL-ссылка на архив> <папка для сохранения файлов>")
 		print(" ")
 		return
 	end
 	print(" ")
-	print("Download link file \"" .. args[2] .. "\"")
+	print("Загрузка файла по ссылке \"" .. args[2] .. "\"")
 	shell.execute("wget " .. args[2] .. "TempFile.pkg -fq")
 	archive.unpack("TempFile.pkg", args[3])
 	shell.execute("rm TempFile.pkg")
 else
 	print(" ")
-	print("Usage: archive <pack/unpack/download> ...")
+	print("Использование: archive <pack/unpack/download> ...")
 	print(" ")
 	return
 end
@@ -2182,10 +2182,10 @@ if arg[1] == "get" or arg[1] == "show" or arg[1] == "print" or arg[1] == "write"
   local cur1, cur2 = gpu.getResolution()
   local scale = cur1/max1*100
   print(" ")
-  print("The maximum supported resolution: " .. max1 .. "x".. max2)
-  print("Current resolution: " .. cur1.."x"..cur2)
+  print("Максимальное поддерживаемое разрешение: " .. max1 .. "x".. max2)
+  print("Текущее разрешение: " .. cur1.."x"..cur2)
   print(" ")
-  print("Scale: "..scale.."%")
+  print("Масштаб: "..scale.."%")
   print(" ")
 else
   ecs.setScale(tonumber(arg[1]) or 1, true)

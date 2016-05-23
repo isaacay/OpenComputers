@@ -109,7 +109,7 @@ local function delete(paste)
 	if result then
 		return true
 	else
-		ecs.error("Отсутствует соединение с Pastebin.com")
+		ecs.error("No connection to Pastebin.com")
 		return false
 	end
 end
@@ -241,10 +241,10 @@ local function displayPastes(from)
 	gpu.setBackground(0xffffff)
 
 	--Стартовая инфотаблица - ну, имя там, размер, дата и прочее
-	ecs.colorText(xPos, yPos, 0x990000, "Имя")
-	gpu.set(xDate, yPos, "Дата")
-	gpu.set(xDownloads, yPos, "Скачиваний")
-	gpu.set(xSyntax, yPos, "Синтакс")
+	ecs.colorText(xPos, yPos, 0x990000, "Name")
+	gpu.set(xDate, yPos, "date")
+	gpu.set(xDownloads, yPos, "downloads")
+	gpu.set(xSyntax, yPos, "Syntax")
 
 	ecs.colorText(1, yPos + 1, 0x990000, string.rep("─", xSize - 2))
 	yPos = yPos + 2
@@ -300,12 +300,12 @@ local function drawTopBar()
 	--Надписи всякие
 	ecs.colorTextWithBack(2, 1, tabColor2, tabColor1, "#1 paste tool since 2002")
 	ecs.colorTextWithBack(11, 3, tabTextColor, tabColor2, "PASTEBIN")
-	local name = "⛨Загрузить новый файл"; newObj("TopButtons", name, ecs.drawAdaptiveButton(1, 5, 1, 0, name, tabColor1, tabTextColor))
+	local name = "⛨Upload new file"; newObj("TopButtons", name, ecs.drawAdaptiveButton(1, 5, 1, 0, name, tabColor1, tabTextColor))
 	
 	local xPos = xSize - 23
 	if username then
-		name = "Разлогиниться"; newObj("TopButtons", name, ecs.drawAdaptiveButton(xPos, 5, 1, 0, name, tabColor1, tabTextColor)); xPos = xPos + unicode.len(name) + 3
-		name = "Выход"; newObj("TopButtons", name, ecs.drawAdaptiveButton(xPos, 5, 1, 0, name, tabColor1, tabTextColor)); xPos = xPos + unicode.len(name) + 3
+		name = "log out"; newObj("TopButtons", name, ecs.drawAdaptiveButton(xPos, 5, 1, 0, name, tabColor1, tabTextColor)); xPos = xPos + unicode.len(name) + 3
+		name = "Exit"; newObj("TopButtons", name, ecs.drawAdaptiveButton(xPos, 5, 1, 0, name, tabColor1, tabTextColor)); xPos = xPos + unicode.len(name) + 3
 
 		--Никнейм
 		ecs.colorTextWithBack(xSize - 1 - unicode.len(username), 3, tabTextColor, tabColor2, username)
@@ -319,9 +319,9 @@ end
 local function inputPassword()
 	--local massiv = ecs.input("auto", "auto", 20, "Войти в Pastebin", {"input", "Логин", ""},  {"input", "Пароль", ""})
 
-	local data = ecs.universalWindow("auto", "auto", 24, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Авторизация"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "Логин"}, {"Input", 0xffffff, 0xccccff, "Пароль", "●"}, {"EmptyLine"}, {"Button", {tabColor2, 0xffffff, "Войти в аккаунт"}, {0x006dbf, 0xffffff, "Отмена"}})
+	local data = ecs.universalWindow("auto", "auto", 24, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "authorization"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "Login"}, {"Input", 0xffffff, 0xccccff, "Password", "●"}, {"EmptyLine"}, {"Button", {tabColor2, 0xffffff, "Sign in to your account"}, {0x006dbf, 0xffffff, "Cancel"}})
 
-	if data[3] == "Отмена" then return false end
+	if data[3] == "Cancel" then return false end
 
 	username = data[1] or ""
 	password = data[2] or ""
@@ -352,7 +352,7 @@ local function waitForSuccessLogin()
 
 		local success = analyseConfig()
 		if not success then return false end
-		ecs.info("auto", "auto", " ", "Захожу в аккаунт...")
+		ecs.info("auto", "auto", " ", "please login...")
 		local success, reason = loginToAccount(username, password)
 
 		if success then
@@ -362,7 +362,7 @@ local function waitForSuccessLogin()
 				reason = string.sub(reason, 18, -1)
 			end
 
-			if reason == "invalid login" then fs.remove(pathToConfig); ecs.error("Неверное сочетание логин/пароль!"); clear() end
+			if reason == "invalid login" then fs.remove(pathToConfig); ecs.error("Invalid combination of username / password!"); clear() end
 		end
 		
 	end
@@ -378,7 +378,7 @@ end
 local function viewPaste(i)
 	local id = MyMassivWithPastes[i]["paste_key"]
 	local tmp = "System/Pastebin/tempfile.lua"
-	ecs.info("auto", "auto", " ", "Загружаю файл...")
+	ecs.info("auto", "auto", " ", "upload files...")
 	os.sleep(0.3)
 	get(id, tmp)
 
@@ -397,7 +397,7 @@ local function viewPaste(i)
 
 	ecs.square(1, 1, xSize, 1, back)
 	gpu.setForeground(0xffffff)
-	ecs.centerText("x", 1, "Просмотр "..id)
+	ecs.centerText("x", 1, "review "..id)
 	ecs.colorTextWithBack(xSize, 1, 0x000000, back, "X")
 
 	--ecs.error("#lines = ".. #lines)
@@ -426,7 +426,7 @@ end
 
 local function launch(i)
 	local tmp = "System/Pastebin/tempfile.lua"
-	ecs.info("auto", "auto", " ", "Загружаю файл...")
+	ecs.info("auto", "auto", " ", "upload files...")
 	get(MyMassivWithPastes[i]["paste_key"], tmp)
 
 	ecs.prepareToExit()
@@ -435,7 +435,7 @@ local function launch(i)
 		ecs.displayCompileMessage(1, r, true, false)
 	else
 		ecs.prepareToExit()
-		print("Программа выполнена успешно. Нажмите любую клавишу, чтобы продолжить.")
+		print("The program was successful. Press any key to continue.")
 		ecs.waitForTouchOrClick()
 	end
 
@@ -446,7 +446,7 @@ end
 
 --ЗАГРУЗИТЬ ФАЙЛ НА ПАСТЕБИН
 local function upload(path, title)
-	ecs.info("auto", "auto", " ", "Загружаю \""..fs.name(path).."\"...")
+	ecs.info("auto", "auto", " ", "loading \""..fs.name(path).."\"...")
 	local file = io.open(path, "r")
     local sText = file:read("*a")
     file:close()
@@ -465,7 +465,7 @@ local function upload(path, title)
     if result then
     	--ecs.error(response)
     else
-    	ecs.error("Отсутствует соединение с Pastebin.com")
+    	ecs.error("No connection to Pastebin.com")
         return false
     end
 end
@@ -486,13 +486,13 @@ if #args > 1 then
 			upload(args[2], fs.name(args[2]))
 			os.sleep(5) -- Ждем, пока 100% прогрузится апи пастебина
 		else
-			ecs.error("Файл не существует или является директорией.")
+			ecs.error("File does not exist or is a directory.")
 			return
 		end
 	end
 end
 
-ecs.info("auto", "auto", " ", "Получаю список файлов...")
+ecs.info("auto", "auto", " ", "Get a list of files...")
 getFileListFromPastebin(pasteLoadLimit)
 
 displayPastes(drawPastesFrom)
@@ -513,40 +513,40 @@ while true do
 				displayPaste(key, ecs.colors.blue, 0xffffff)
 
 				if e[5] == 1 then
-					local action = context.menu(e[3], e[4], {"Просмотр"}, "-", {"Запустить"}, {"Сохранить как"}, "-",{"Удалить"})
+					local action = context.menu(e[3], e[4], {"review"}, "-", {"Start"}, {"Save as"}, "-",{"Delete"})
 
-					if action == "Сохранить как" then
-						local data = ecs.universalWindow("auto", "auto", 36, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Сохранить как"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "Имя"}, {"EmptyLine"}, {"Button", {0xffffff, 0xccccff, "OK"}} ) 
+					if action == "Save as" then
+						local data = ecs.universalWindow("auto", "auto", 36, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Save as"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "Name"}, {"EmptyLine"}, {"Button", {0xffffff, 0xccccff, "OK"}} ) 
 						local path = data[1]
 						if path ~= nil or path ~= "" or path ~= " " then
 							fs.makeDirectory(fs.path(path))
 							local action2 = ecs.askForReplaceFile(path)
-							ecs.info("auto", "auto", " ", "Загружаю файл...")
+							ecs.info("auto", "auto", " ", "upload files...")
 							if action2 == nil or action2 == "replace" then
 								fs.remove(path)
 								get(MyMassivWithPastes[key]["paste_key"], path)
-								ecs.select("auto", "auto", " ", {{"Загрузка завершена."}}, {{"Заебись!"}})
+								ecs.select("auto", "auto", " ", {{"loading is complete."}}, {{"Zaebis!"}})
 							elseif action2 == "keepBoth" then
 								get(MyMassivWithPastes[key]["paste_key"], fs.path(path).."(copy)"..fs.name(path))
 							end
 							drawAll()
 							displayPastes(drawPastesFrom)
 						else
-							ecs.error("Сохранение не удалось: не указан путь.")
+							ecs.error("Saving failed: Unknown path.")
 						end
-					elseif action == "Удалить" then
-						ecs.info("auto", "auto", " ", "Удаляю файл...")
+					elseif action == "Delete" then
+						ecs.info("auto", "auto", " ", "delete files...")
 						delete(MyMassivWithPastes[key]["paste_key"])
 						os.sleep(5)
-						ecs.info("auto", "auto", " ", "Перезагружаю список файлов...")
+						ecs.info("auto", "auto", " ", "Reload the list of files...")
 						getFileListFromPastebin(pasteLoadLimit)
 						drawAll()
 						displayPastes(drawPastesFrom)
-					elseif action == "Просмотр" then
+					elseif action == "review" then
 						viewPaste(key)
 						drawAll()
 						displayPastes(drawPastesFrom)
-					elseif action == "Запустить" then
+					elseif action == "Start" then
 						launch(key)
 						drawAll()
 						displayPastes(drawPastesFrom)
@@ -570,7 +570,7 @@ while true do
 
 				os.sleep(0.3)
 
-				if key == "Разлогиниться" then
+				if key == "log out" then
 					fs.remove("System/Pastebin/Login.cfg")
 					drawAll()
 					if not waitForSuccessLogin() then
@@ -578,29 +578,29 @@ while true do
 						return true		
 					end
 					drawTopBar()
-					ecs.info("auto", "auto", " ", "Получаю список файлов...")
+					ecs.info("auto", "auto", " ", "Get a list of files...")
 					getFileListFromPastebin(pasteLoadLimit)
 					drawAll()
 					displayPastes(drawPastesFrom)
-				elseif key == "⛨Загрузить новый файл" then
-					local data = ecs.universalWindow("auto", "auto", 36, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Загрузить на Pastebin"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "Путь к файлу"}, {"Input", 0xffffff, 0xccccff, "Имя на Pastebin"}, {"EmptyLine"}, {"Button", {tabColor2, 0xffffff, "OK"}}) 
+				elseif key == "⛨Upload new file" then
+					local data = ecs.universalWindow("auto", "auto", 36, tabColor1, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Download to Pastebin"}, {"EmptyLine"}, {"Input", 0xffffff, 0xccccff, "The path to the file"}, {"Input", 0xffffff, 0xccccff, "The name on the Pastebin"}, {"EmptyLine"}, {"Button", {tabColor2, 0xffffff, "OK"}}) 
 					if fs.exists(data[1]) then
 						if not fs.isDirectory(data[1]) then
 							upload(data[1], data[2] or "Untitled")
 							os.sleep(5)
-							ecs.info("auto", "auto", " ", "Перезагружаю список файлов...")
+							ecs.info("auto", "auto", " ", "Reload the list of files...")
 							
 							getFileListFromPastebin(pasteLoadLimit)
 							drawAll()
 							drawPastesFrom = 1
 							displayPastes(drawPastesFrom)
 						else
-							ecs.error("Нельзя загружать папки.")
+							ecs.error("You can not upload folders.")
 						end
 					else
-						ecs.error("Файл \""..fs.name(data[1]).."\" не существует.")
+						ecs.error("File \""..fs.name(data[1]).."\" does not exist.")
 					end
-				elseif key == "Выход" then
+				elseif key == "Exit" then
 					ecs.prepareToExit()
 					return true
 				end

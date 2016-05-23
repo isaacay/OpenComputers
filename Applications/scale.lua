@@ -7,10 +7,10 @@ if arg[1] == "get" or arg[1] == "show" or arg[1] == "print" or arg[1] == "write"
   local cur1, cur2 = gpu.getResolution()
   local scale = cur1/max1*100
   print(" ")
-  print("Максимальное поддерживаемое разрешение: " .. max1 .. "x".. max2)
-  print("Текущее разрешение: " .. cur1.."x"..cur2)
+  print("The maximum supported resolution: " .. max1 .. "x".. max2)
+  print("Current resolution: " .. cur1.."x"..cur2)
   print(" ")
-  print("Масштаб: "..scale.."%")
+  print("Scale: "..scale.."%")
   print(" ")
 else
   ecs.setScale(tonumber(arg[1]) or 1, true)

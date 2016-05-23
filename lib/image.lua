@@ -473,15 +473,15 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 		header = file:read(1)
 		if not header then break end
 		-- print("----------------------")
-		-- print("header: " .. header)
+		-- print("Заголовок: " .. header)
 
 		if header == "A" then
 			local countOfBytesForArraySize = string.byte(file:read(1))
 			alphaSize = string.byte(file:read(countOfBytesForArraySize))
 			alpha = string.byte(file:read(1))
-			-- print("The number of bytes to the size of the array of characters: " .. countOfBytesForArraySize)
-			-- print("The size of the array of characters: " .. alphaSize)
-			-- print("Alpha: " .. alpha)
+			-- print("Количество байт под размер массива символов: " .. countOfBytesForArraySize)
+			-- print("Размер массива символов: " .. alphaSize)
+			-- print("Альфа: " .. alpha)
 
 		elseif header == "S" then
 			if decompressColors then
@@ -490,8 +490,8 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 				symbolSize = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
 			symbol = decodeChar(file)
-			-- print("solid color Text Size: " .. symbolSize)
-			-- print("Symbol: \"" .. symbol .. "\"")
+			-- print("Размер массива цвета текста: " .. symbolSize)
+			-- print("Символ: \"" .. symbol .. "\"")
 
 		elseif header == "F" then
 			if decompressColors then
@@ -501,8 +501,8 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 				foregroundSize = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 				foreground = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
-			-- print("an array of background colors Size: " .. foregroundSize)
-			-- print("Text color: " .. foreground)
+			-- print("Размер массива цвета фона: " .. foregroundSize)
+			-- print("Цвет текста: " .. foreground)
 
 		elseif header == "B" then
 			backgroundSize = mergeBytesToNumber(string.byte(file:read(2), 1, 2))
@@ -511,8 +511,8 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 			else
 				background = mergeBytesToNumber(string.byte(file:read(3), 1, 3))
 			end
-			-- print("The size of the array of coordinates: " .. backgroundSize)
-			-- print("Background color: " .. background)
+			-- print("Размер массива координат: " .. backgroundSize)
+			-- print("Цвет фона: " .. background)
 
 			--Поддержка загрузки формата OCIF3
 			if not useOCIF4 then
@@ -521,7 +521,7 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 					local x = string.byte(file:read(1))
 					local y = string.byte(file:read(1))
 					local index = convertCoordsToIndex(x, y, readedWidth)
-					-- print("Coordinate: " .. x .. "x" .. y .. ", index: "..index)
+					-- print("Координата: " .. x .. "x" .. y .. ", индекс: "..index)
 
 					picture[index] = background
 					picture[index + 1] = foreground
@@ -534,13 +534,13 @@ local function loadOCIF2(file, decompressColors, useOCIF4)
 		elseif header == "Y" and useOCIF4 then
 			ySize = string.byte(file:read(1))
 			y = string.byte(file:read(1))
-			-- print("The size of the array Y: " .. ySize)
-			-- print("Current Y: " .. y)
+			-- print("Размер массива Y: " .. ySize)
+			-- print("Текущий Y: " .. y)
 
 			for i = 1, ySize do
 				local x = string.byte(file:read(1))
 				local index = convertCoordsToIndex(x, y, readedWidth)
-				-- print("Coordinate: " .. x .. "x" .. y .. ", index: "..index)
+				-- print("Координата: " .. x .. "x" .. y .. ", индекс: "..index)
 
 				picture[index] = background
 				picture[index + 1] = foreground
@@ -1182,17 +1182,17 @@ end
 
 local function createSaveAndLoadFiles()
 	ecs.prepareToExit()
-	ecs.error("I create / upload images")
+	ecs.error("Создаю/загружаю изображение")
 	-- local cyka = image.load("MineOS/System/OS/Icons/Love.pic")
 	local cyka = image.createImage(4, 4)
-	ecs.error("I draw a loaded image")
+	ecs.error("Рисую загруженное изображение")
 	image.draw(2, 2, cyka)
-	ecs.error("Stores it in 4 formats")
+	ecs.error("Сохраняю его в 4 форматах")
 	image.save("0.pic", cyka, 0)
 	image.save("1.pic", cyka, 1)
 	image.save("4.pic", cyka, 4)
 	ecs.prepareToExit()
-	ecs.error("Loading all 4 formats and draw them")
+	ecs.error("Загружаю все 4 формата и рисую их")
 	local cyka0 = image.load("0.pic")
 	image.draw(2, 2, cyka0)
 	local cyka1 = image.load("1.pic")

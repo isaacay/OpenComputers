@@ -170,9 +170,9 @@ end
 function colorlib.debugColorCompression(color)
   local compressedColor = colorlib.convert24BitTo8Bit(color)
   local decompressedColor = colorlib.convert8BitTo24Bit(compressedColor)
-  print("Original color: " .. string.format("0x%06X", color))
-  print("Compressed Color: " .. string.format("0x%02X", compressedColor))
-  print("decompressed color: " .. string.format("0x%06X", decompressedColor))
+  print("Исходный цвет: " .. string.format("0x%06X", color))
+  print("Сжатый цвет: " .. string.format("0x%02X", compressedColor))
+  print("Расжатый цвет: " .. string.format("0x%06X", decompressedColor))
 end
 
 return colorlib

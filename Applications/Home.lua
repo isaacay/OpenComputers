@@ -22,7 +22,7 @@ local doors
 
 if not fs.exists(pathToWhitelist) then
   fs.makeDirectory(fs.path(pathToWhitelist))
-  config.write(pathToWhitelist, "Igor_Timofeev", "owner")
+  config.write(pathToWhitelist, "isaacay", "owner")
 end
 
 if not fs.exists(pathToDoors) then
@@ -129,7 +129,7 @@ local function openAllDoors(open)
 end
 
 local function mini()
-  clearMonitor(0xffffff, 0x444444, "Приложите палец для идентификации")
+  clearMonitor(0xffffff, 0x444444, "Put a finger to identify")
 end
 
 local function infa()
@@ -137,9 +137,9 @@ local function infa()
   gpu.setForeground(0x444444)
 
   local yPos = ySize - 3
-  if c.isAvailable("mfsu") then ecs.centerText("x", yPos, "Заряд МФСУ: "..c.mfsu.getStored()); yPos = yPos + 1 end
-  if c.isAvailable("reactor") then ecs.centerText("x", yPos, "Нагрев реактора: "..math.ceil(c.reactor.getHeat() / c.reactor.getMaxHeat() * 100).."%"); yPos = yPos + 1 end
-  if c.isAvailable("reactor_chamber") then ecs.centerText("x", yPos, "Нагрев реактора: "..math.ceil(c.reactor_chamber.getHeat() / c.reactor_chamber.getMaxHeat() * 100).."%"); yPos = yPos + 1 end
+  if c.isAvailable("mfsu") then ecs.centerText("x", yPos, "charge MFSU: "..c.mfsu.getStored()); yPos = yPos + 1 end
+  if c.isAvailable("reactor") then ecs.centerText("x", yPos, "The heating of the reactor: "..math.ceil(c.reactor.getHeat() / c.reactor.getMaxHeat() * 100).."%"); yPos = yPos + 1 end
+  if c.isAvailable("reactor_chamber") then ecs.centerText("x", yPos, "The heating of the reactor: "..math.ceil(c.reactor_chamber.getHeat() / c.reactor_chamber.getMaxHeat() * 100).."%"); yPos = yPos + 1 end
 end
 
 local function main()
@@ -148,12 +148,12 @@ local function main()
   
   local yCenter = math.floor(ySize / 2)
   local yPos = yCenter - 12
-  newObj("buttons", 1, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Открыть двери", buttons[1][2] or 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", 2, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Фабрика материи", buttons[2][2] or 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", 3, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Управление реактором", buttons[3][2] or 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", 4, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Свет на втором этаже", buttons[4][2] or 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", 5, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Свет на первом этаже", buttons[5][2] or 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", 6, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Свет в шахте", buttons[6][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 1, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Open the door", buttons[1][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 2, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "matter Factory", buttons[2][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 3, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "reactor Control", buttons[3][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 4, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "The light on the second floor", buttons[4][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 5, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "The light on the first floor", buttons[5][2] or 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", 6, ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Light in the mine", buttons[6][2] or 0x444444, 0xffffff)); yPos = yPos + 4
 
   infa()
 end
@@ -175,7 +175,7 @@ local function killThemAll()
   rs.setBundledOutput(redstoneSide, killWireColor, 100)
   os.sleep(2)
   rs.setBundledOutput(redstoneSide, killWireColor, 0)
-  main("Помещение очищено от всего живого.")
+  main("The room cleared of all living things.")
 end
 
 local function switchButton(key, buttonColor)
@@ -190,7 +190,7 @@ end
 
 -----------------------------------------
 
-main("Ничего интересного.")
+main("Nothing interesting.")
 
 for key, val in pairs(screens) do
   if not val[2] then
@@ -211,7 +211,7 @@ while true do
 	  local color
 	  if key == 3 then color = ecs.colors.red end
 	  switchButton(key, color)
-          main("Изменен параметр кнопки "..tostring(key).." на "..tostring(buttons[key][1]))
+          main("Changed option buttons "..tostring(key).." on "..tostring(buttons[key][1]))
           if key == 1 then
             openAllDoors(buttons[key][1])
           else
@@ -226,22 +226,22 @@ while true do
       bind(e[2])
 
       if checkNick(e[6]) then
-        clearMonitor(0x44ff44, 0xffffff,  "С возвращением, "..e[6].."!")
+        clearMonitor(0x44ff44, 0xffffff,  "Welcome back, "..e[6].."!")
         door(e[2], true)
         os.sleep(doorTimer)
         door(e[2], false)
         mini()
         bind()
-        main(e[6].." вернулся в нашу скромную обитель!")
+        main(e[6].." I returned to our humble abode!")
       else
-        clearMonitor(0xff0000, 0xffffff, "Недостойным дороги нет.")
+        clearMonitor(0xff0000, 0xffffff, "Unworthy of the road no.")
         bind()
         killThemAll()
         bind(e[2])
         os.sleep(doorTimer)
         mini()
         bind()
-        main(e[6].." попытался зайти в дом. Убей его. Убей чужака!")
+        main(e[6].." I tried to enter the house. Kill him. Kill the alien!")
       end
     end
 

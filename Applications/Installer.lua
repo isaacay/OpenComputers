@@ -10,12 +10,12 @@ local gpu = component.gpu
 
 --Массив с программами, которые необходимо загрузить. Первый элемент - ссылка на файл, второй - путь для сохранения файла.
 local applications = {
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/lib/colorlib.lua", "lib/colorlib.lua" },
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/lib/ECSAPI.lua", "lib/ECSAPI.lua" },
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/lib/context.lua", "lib/context.lua" },
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/lib/palette.lua", "lib/palette.lua" },
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/lib/image.lua", "lib/image.lua" },
-	{ "https://raw.githubusercontent.com/IgorTimofeev/OpenComputers/master/Applications/Photoshop/Photoshop.lua", "Photoshop.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/lib/colorlib.lua", "lib/colorlib.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/lib/ECSAPI.lua", "lib/ECSAPI.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/lib/context.lua", "lib/context.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/lib/palette.lua", "lib/palette.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/lib/image.lua", "lib/image.lua" },
+	{ "https://raw.githubusercontent.com/isaacay/OpenComputers/master/Applications/Photoshop/Photoshop.lua", "Photoshop.lua" },
 }
 
 --Получаем размеры монитора
@@ -106,7 +106,7 @@ local function downloadWindow()
 	local oldPixels = rememberOldPixels(x, y, x + width - 1, y + height - 1)
 	--Рисуем верхний тулбар
 	square(x, y, width, 1, 0xcccccc)
-	local text = "Загрузка"
+	local text = "Loading"
 	local xPos, yPos = math.floor(xSize / 2 - unicode.len(text) / 2), y
 	gpu.setForeground( 0x000000 )
 	gpu.set(xPos, yPos, text)
@@ -120,7 +120,7 @@ local function downloadWindow()
 		progressBar(xPos, yPos, progressBarWidth, 1, 0xcccccc, 0x3366CC, percent)
 		square(xPos, yPos + 1, progressBarWidth, 1, 0xeeeeee)
 		gpu.setForeground(0x262626)
-		gpu.set(xPos, yPos + 1, stringLimit("end", "Устанавливаю " .. applications[i][2], progressBarWidth))
+		gpu.set(xPos, yPos + 1, stringLimit("end", "install " .. applications[i][2], progressBarWidth))
 		shell.execute("wget " .. applications[i][1] .. " " .. applications[i][2] .. " -fQ")
 		percent = math.floor(100 * i / #applications)
 	end

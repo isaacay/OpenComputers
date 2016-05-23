@@ -8,7 +8,7 @@ local modem
 if component.isAvailable("modem") then
 	modem = component.modem
 else
-	error("Этой программе требуется беспроводной модем для работы!")
+	error("This program requires a wireless modem for the job!")
 end
 
 modem.open(port)
@@ -18,51 +18,51 @@ modem.open(port)
 local commands = {
 	[17] = {
 		messageToRobot = "forward",
-		screenText = "Приказываю роботу двигаться вперед",
+		screenText = "I order the robot to move forward",
 	},
 	[31] = {
 		messageToRobot = "back",
-		screenText = "Приказываю роботу двигаться назад",
+		screenText = "I order the robot to move backwards",
 	},
 	[30] = {
 		messageToRobot = "turnLeft",
-		screenText = "Приказываю роботу повернуться налево",
+		screenText = "I order the robot to turn left",
 	},
 	[32] = {
 		messageToRobot = "turnRight",
-		screenText = "Приказываю роботу повернуться направо",
+		screenText = "I order the robot to turn to the right",
 	},
 	[57] = {
 		messageToRobot = "up",
-		screenText = "Приказываю роботу двигаться вверх",
+		screenText = "I order the robot to move up",
 	},
 	[42] = {
 		messageToRobot = "down",
-		screenText = "Приказываю роботу двигаться вниз",
+		screenText = "I order the robot to move down",
 	},
 	[18] = {
 		messageToRobot = "use",
-		screenText = "Приказываю роботу использовать предмет в руках",
+		screenText = "I order the robot to use the object in their hands",
 	},
 	[14] = {
 		messageToRobot = "exit",
-		screenText = "Приказываю роботу завершить программу принятия сообщений",
+		screenText = "I order the robot to complete the adoption of the program messages",
 	},
 	[59] = {
 		messageToRobot = "selfDestroy",
-		screenText = "Приказываю роботу уничтожить всю информацию на диске. Ему было приятно работать с тобой, повелитель!",
+		screenText = "I order the robot to destroy all information on the disk. it was a pleasure to work with you, Lord!",
 	},
 	[19] = {
 		messageToRobot = "redstone",
-		screenText = "Приказываю роботу включить/выключить редстоун вокруг себя",
+		screenText = "I order the robot to turn on / off Redstone around him",
 	},
 	[16] = {
 		messageToRobot = "drop",
-		screenText = "Приказываю роботу выкинуть предмет из выбранного слота",
+		screenText = "I order the robot to throw out an item from the selected slot",
 	},
 	[33] = {
 		messageToRobot = "changeToolUsingMode",
-		screenText = "Приказываю роботу изменить режим использования предмета, а именно swing() или use()",
+		screenText = "I order the robot to change the mode of use of the subject, namely the swing () or use ()",
 	},
 }
 
@@ -79,10 +79,10 @@ local function send()
 			end
 		elseif eventData[1] == "scroll" then
 			if eventData[5] == 1 then
-				print("Приказываю роботу увеличить режим использования предметов, т.е. useDown() изменится на use(), а use() на useUp()")
+				print("I order the robot to increase the mode of use of objects, ie, useDown () will change to use (), and use () to useUp ()")
 				modem.broadcast(port, keyWord, "increaseToolUsingSide")
 			else
-				print("Приказываю роботу уменьшить режим использования предметов, т.е. useUp() изменится на use(), а use() на useDown()")
+				print("I order the robot mode to reduce the use of objects, ie, useUp () will change to use (), and use () to useDown ()")
 				modem.broadcast(port, keyWord, "decreaseToolUsingSide")
 			end
 		end
@@ -91,13 +91,13 @@ end
 
 local function main()
 	print(" ")
-	print("Добро пожаловать в программу ECSGrief Sender v1.0 alpha early access!")
+	print("Welcome to the ECS Grief Sender v1.0 alpha early access!")
 	print(" ")
-	print("Используйте WASD, а также SPACE и SHIFT для перемещения. Нажатие клавиши E заставит робота использовать предмет, находящийся у него в руках. Также вы можете использовать клавишу F1 для экстренного удаления всех данных с робота и BACKSPACE для простого выхода из программы. Удачной охоты за ресами!")
+	print("Use WASD, as well as the SPACE and SHIFT to move. Pressing the E key will cause the robot to use the items found in his hand. You can also use the F1 key for emergency removal of all data from the robot and BACKSPACE for easy exit from the program. Happy hunting for ests!")
 	print(" ")
 	send()
 	print(" ")
-	print("Программа доминации над роботом завершена!")
+	print("The program of domination of the robot is complete!")
 end
 
 -------------------------------------------------------------------------------------

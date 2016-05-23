@@ -443,13 +443,13 @@ local function convertAllPngToPic()
 			else
 				local fileFormat = ecs.getFileFormat(path..file)
 				if fileFormat == ".png" then
-					print("Found in .png "..path..file)
-					print("Loading the old format...")
+					print("Найден .png в "..path..file)
+					print("Загружаю старый формат...")
 					local picture = loadOldPng()
-					print("Saved in the new format...")
+					print("Сохраняю в новом формате...")
 					image.saveCompressed(path..ecs.hideFileFormat(file)..".pic", picture)
 					picture = nil
-					print("Successful!")
+					print("Успешно!")
 					print(" ")
 					counter = counter + 1
 				end
@@ -459,7 +459,7 @@ local function convertAllPngToPic()
 
 	print(" ")
 	doConvert("/")
-	print("Total converted "..counter.." files.")
+	print("Всего сконвертировано "..counter.." файлов.")
 	print(" ")
 end
 

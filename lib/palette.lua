@@ -64,7 +64,7 @@ local function calculateAllColors(hexColor)
 	h, s, b = colorlib.RGBtoHSB(rr, gg, bb)
 	hex = hexColor
 
-	--ecs.error("It is estimated: r = "..rr..", g = "..gg..", b = "..bb..", h = "..h..", s = "..s..", b = "..b..", hex = "..tostring(hex))
+	--ecs.error("Подсчитано: r = "..rr..", g = "..gg..", b = "..bb..", h = "..h..", s = "..s..", b = "..b..", hex = "..tostring(hex))
 end
 
 local function rememberOldCrest()
@@ -147,7 +147,7 @@ end
 local function drawButtons()
 	local xButtons, yButtons = xColors + 12, yBigRainbow
 	newObj("Buttons", "  OK  ", ecs.drawAdaptiveButton(xButtons, yButtons, 3, 0, "  OK  ", ecs.colors.lightBlue, 0xffffff))
-	newObj("Buttons", "cancellation", ecs.drawAdaptiveButton(xButtons, yButtons + 2, 3, 0, "cancellation", 0xffffff, 0x000000))
+	newObj("Buttons", "Отмена", ecs.drawAdaptiveButton(xButtons, yButtons + 2, 3, 0, "Отмена", 0xffffff, 0x000000))
 end
 
 --Собственно, отрисовка палитры
@@ -158,7 +158,7 @@ local function drawPalette()
 
 	--Рисуем окошечко и прочее
 	xPalette, yPalette = ecs.correctStartCoords(xPalette, yPalette, width, height)
-	oldPixels = ecs.emptyWindow(xPalette, yPalette, width, height, "Choose a color")
+	oldPixels = ecs.emptyWindow(xPalette, yPalette, width, height, "Выберите цвет")
 
 	--Считаем коорды радуки и всякую хуйню
 	xBigRainbow, yBigRainbow = xPalette + 2, yPalette + 2

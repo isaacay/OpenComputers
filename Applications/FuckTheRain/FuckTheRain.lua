@@ -8,7 +8,7 @@ local debug
 _G.fuckTheRainSound = true
 
 if not component.isAvailable("debug") then
-	ecs.error("Этой программе требуется дебаг-карта (не крафтится, только креативный режим)")
+	ecs.error("This program debug card required (not craft, creative mode only)")
 	return
 else
 	debug = component.debug

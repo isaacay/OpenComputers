@@ -12,7 +12,7 @@ local gpu = component.gpu
 local inventoryController
 
 if not component.isAvailable("inventory_controller") then
-	ecs.error("This program requires a connection adapter inserted therein improvement \"inventory controller\", while on the adapter itself must be put on top of the chest in which to do things for sale.")
+	ecs.error("Данная программа требует подключенный Адаптер с вставленным в него улучшением \"Контроллер инвентаря\", при этом на сам адаптер сверху необходимо поставить сундук, в который будут поступать предметы для продажи.")
 	return
 else
 	inventoryController = component.inventory_controller
@@ -472,11 +472,11 @@ local function sellToAdmins(numberOfItemInInventory, skoka)
 			massivWithProfile.money = massivWithProfile.money + price * skoka
 			return (price * skoka)
 		else
-			ecs.error("The admins no date "..tostring(item.data)..", unable to translate")
+			ecs.error("У админов нет даты "..tostring(item.data)..", ищи ошибку, говнокодер ебаный!")
 			return 0
 		end
 	else
-		ecs.error("There are no admins id"..tostring(item.id)..", unable to translate")
+		ecs.error("У админов нет ид"..tostring(item.id)..", ищи ошибку, говнокодер ебаный!")
 		return 0
 	end
 end
@@ -507,7 +507,7 @@ end
 --Выдает успех, если предмет найден
 --А также самую лучшую цену, количество предмета на торг. площадке и никнейм самого дешевого
 local function getInfoAboutItemOnMarket(id, data)
-	local price, count, success, nickname, label = nil, 0, false, nil, "JUICE"
+	local price, count, success, nickname, label = nil, 0, false, nil, "CYKA"
 	--Если в маркете есть такой ид
 	if market[id] then
 		--И такая дата
@@ -634,45 +634,45 @@ local function showInventory(x, y, page, currentItem)
 	ecs.colorText(xPos, yPos, colors.inventoryText, massivWithProfile.inventory[currentItem].label); yPos = yPos + 1
 	ecs.colorText(xPos, yPos, colors.rarity[currentRarity], currentRarity); yPos = yPos + 2
 	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "ID: " .. massivWithProfile.inventory[currentItem].id); yPos = yPos + 1
-	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Colour: " .. massivWithProfile.inventory[currentItem].data); yPos = yPos + 1
-	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "amount: " .. massivWithProfile.inventory[currentItem].count); yPos = yPos + 1
+	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Цвет: " .. massivWithProfile.inventory[currentItem].data); yPos = yPos + 1
+	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Количество: " .. massivWithProfile.inventory[currentItem].count); yPos = yPos + 1
 
 	--Твой бабос
 	yPos = yPos + 1
-	ecs.colorText(xPos, yPos, colors.inventoryText, "your capital:"); yPos = yPos + 1
+	ecs.colorText(xPos, yPos, colors.inventoryText, "Ваш капитал:"); yPos = yPos + 1
 	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, massivWithProfile.money .. moneySymbol); yPos = yPos + 1
 	
 	--Цена админов
 	yPos = yPos + 1
-	local adminPrice = "Absent"
+	local adminPrice = "Отсутствует"
 	if adminShop[massivWithProfile.inventory[currentItem].id] then
 		if adminShop[massivWithProfile.inventory[currentItem].id][massivWithProfile.inventory[currentItem].data] then
 			adminPrice = fixMoney(adminShop[massivWithProfile.inventory[currentItem].id][massivWithProfile.inventory[currentItem].data].price * adminSellMultiplyer)
 		end
 	end
-	ecs.colorText(xPos, yPos, colors.inventoryText, "Price from admins:"); yPos = yPos + 1
+	ecs.colorText(xPos, yPos, colors.inventoryText, "Цена у админов:"); yPos = yPos + 1
 	ecs.colorText(xPos, yPos, colors.inventoryTextDarker, tostring(adminPrice)..moneySymbol)
 
 	--Цена на ТП
 	yPos = yPos + 2
 	local success, price, count = getInfoAboutItemOnMarket(massivWithProfile.inventory[currentItem].id, massivWithProfile.inventory[currentItem].data)
-	ecs.colorText(xPos, yPos, colors.inventoryText, "Price on the Marketplace:"); yPos = yPos + 1
+	ecs.colorText(xPos, yPos, colors.inventoryText, "Цена на Торговой Площадке:"); yPos = yPos + 1
 	if success then
-		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "For sale " .. prettyItemCount(count) .. " штук"); yPos = yPos + 1
-		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Price starts at " .. prettyItemCount(price) .. moneySymbol); yPos = yPos + 1
+		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Продается " .. prettyItemCount(count) .. " штук"); yPos = yPos + 1
+		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Цена стартует от " .. prettyItemCount(price) .. moneySymbol); yPos = yPos + 1
 	else
-		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Absent"); yPos = yPos + 1
+		ecs.colorText(xPos, yPos, colors.inventoryTextDarker, "Отсутствует"); yPos = yPos + 1
 	end
 
 	--Кнопы
 	xPos = xPos - 2
 	yPos = ySize - 3
 	local x1, y1, x2, y2, name
-	name = "Sell players"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, colors.sellButtonColor, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
-	if adminPrice ~= "Absent" then
-		name = "Sell admins"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, 0x66b6ff, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
+	name = "Продать игрокам"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, colors.sellButtonColor, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
+	if adminPrice ~= "Отсутствует" then
+		name = "Продать админам"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, 0x66b6ff, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
 	end
-	name = "Add inventory"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, 0x99dbff, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
+	name = "Пополнить инвентарь"; x1, y1, x2, y2 = ecs.drawButton(xPos, yPos, widthOfItemInfoPanel, 3, name, 0x99dbff, colors.sellButtonTextColor); newObj("SellButtons", name, x1, y1, x2, y2, widthOfItemInfoPanel); yPos = yPos - 3
 
 	--Перелистывалки
 	local stro4ka = tostring(page) .. " из " .. tostring(countOfPages)
@@ -691,7 +691,7 @@ local function sell()
 
 	--Если в инвентаре ни хуя нет, то сасируй
 	if #massivWithProfile.inventory == 0 then
-		ecs.centerText("xy", 0, "Your inventory is empty.")
+		ecs.centerText("xy", 0, "Ваш инвентарь пуст.")
 		return
 	end
 
@@ -723,31 +723,31 @@ local function sell()
 					elseif key == "<" then
 						if currentPage > 1 then currentPage = currentPage - 1 end
 					
-					elseif key == "Add inventory" then
-						ecs.error("Пихай предметы в сундук и жми ок, епта! (bad translation: Piha items in the chest and PUSH app epta!)")
+					elseif key == "Пополнить инвентарь" then
+						ecs.error("Пихай предметы в сундук и жми ок, епта!")
 						local addedCount = addToInventoryFromChest()
-						ecs.error("Added "..addedCount.." items.")
+						ecs.error("Добавлено "..addedCount.." предметов.")
 					
-					elseif key == "Sell admins" then
+					elseif key == "Продать админам" then
 						local maxToSell = massivWithProfile.inventory[currentItem].count
-						local data = ecs.universalWindow("auto", "auto", 40, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "How to sell?"}, {"EmptyLine"}, {"Slider", 0xffffff, 0x33db80, 1, maxToSell, math.floor(maxToSell / 2), "", " PC."}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Sell"}})
+						local data = ecs.universalWindow("auto", "auto", 40, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Сколько продаем?"}, {"EmptyLine"}, {"Slider", 0xffffff, 0x33db80, 1, maxToSell, math.floor(maxToSell / 2), "", " шт."}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Продать"}})
 						local count = data[1]
 						if count then
 							local money = sellToAdmins(currentItem, count)
-							ecs.universalWindow("auto", "auto", 40, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Successfully submitted!"}, {"CenterText", 0xffffff, "You earned "..money..moneySymbol}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Ok"}})
+							ecs.universalWindow("auto", "auto", 40, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Успешно продано!"}, {"CenterText", 0xffffff, "Ты заработал "..money..moneySymbol}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Ok"}})
 						else
-							ecs.error("Error in the sale!")
+							ecs.error("Ошибка при продаже! Дебажь!")
 						end
 					
-					elseif key == "Sell players" then
+					elseif key == "Продать игрокам" then
 						local maxToSell = massivWithProfile.inventory[currentItem].count
-						local data = ecs.universalWindow("auto", "auto", 36, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Sell players"}, {"EmptyLine"}, {"Input", 0xffffff, 0x33db80, "Price for one"}, {"EmptyLine"}, {"CenterText", 0xffffff, "amount:"}, {"Slider", 0xffffff, 0x33db80, 1, maxToSell, math.floor(maxToSell / 2), "", " PC."}, {"EmptyLine"}, {"CenterText", 0xffffff, "With each sale with you"}, {"CenterText", 0xffffff, "It charges a fee of 4%"}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Sell"}})
+						local data = ecs.universalWindow("auto", "auto", 36, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Продать игрокам"}, {"EmptyLine"}, {"Input", 0xffffff, 0x33db80, "Цена за штуку"}, {"EmptyLine"}, {"CenterText", 0xffffff, "Количество:"}, {"Slider", 0xffffff, 0x33db80, 1, maxToSell, math.floor(maxToSell / 2), "", " шт."}, {"EmptyLine"}, {"CenterText", 0xffffff, "При каждой продаже с вас"}, {"CenterText", 0xffffff, "взымается комиссия в 4%"}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Продать"}})
 						local price, count = tonumber(data[1]), data[2]
 						if price then
 							sellToPlayers(currentItem, count, price, massivWithProfile.nickname)
-							ecs.universalWindow("auto", "auto", 36, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Your subject may be for sale!"}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Ok"}})
+							ecs.universalWindow("auto", "auto", 36, 0x444444, true, {"EmptyLine"}, {"CenterText", 0xffffff, "Ваш предмет выставлен на продажу!"}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Ok"}})
 						else
-							ecs.error("Error! Invalid sale price!")
+							ecs.error("Ошибка! Неверно указана цена продажи!")
 						end
 					end
 
@@ -792,7 +792,7 @@ local function buyFromSeller(id, data, sellerNumber, count)
 	--Удаляем указанное количество предметов с торговой площадки
 	market[id][data][sellerNumber].count = market[id][data][sellerNumber].count - count
 	--Сохраняем в лог данные о трансакции
-	log("Player " .. massivWithProfile.nickname .. " I bought " .. count .. " piece goods \"" .. market[id][data].label .. " (" .. id .. " " .. data .. ")\" Player " .. market[id][data][sellerNumber].nickname .. " buy price " .. market[id][data][sellerNumber].price .. moneySymbol .. " a piece. The amount of the transaction " .. moneyToWork .. moneySymbol .. ", store administration received " .. moneyForAdmins .. moneySymbol)
+	log("Игрок " .. massivWithProfile.nickname .. " приобрел " .. count .. " штук товара \"" .. market[id][data].label .. " (" .. id .. " " .. data .. ")\" у игрока " .. market[id][data][sellerNumber].nickname .. " по цене " .. market[id][data][sellerNumber].price .. moneySymbol .. " за штуку. Сумма трансакции составляет " .. moneyToWork .. moneySymbol .. ", администрация магазина получила " .. moneyForAdmins .. moneySymbol)
 	--Если количество предметов стало 0, то удалить запись продавца об этом предмете
 	if market[id][data][sellerNumber].count <= 0 then table.remove(market[id][data], sellerNumber) end
 	--Если не существует более продавцов данной Даты, то удалить запись о дате
@@ -863,16 +863,16 @@ local function buy()
 
 		if not marketSellersList then
 			ecs.border(xPos, yPos, width, 3, 0x262626, 0xFFFFFF)
-			gpu.set(xPos + 2, yPos + 1, "Search subjects")
+			gpu.set(xPos + 2, yPos + 1, "Поиск по предметам")
 
 			yPos = yPos + 4
 		end
 
 		local background, foreground = ecs.colors.blue, 0xFFFFFF
 		ecs.square(4, yPos, xSize - 7, 1, background)
-		ecs.colorText(xName, yPos, foreground, (function () if marketSellersList then return "SELLER" else return "SUBJECT" end end)())
-		ecs.colorText(xCountOrSeller, yPos, foreground, "QUANTITY")
-		ecs.colorText(xPrice, yPos, foreground, "PRICE")
+		ecs.colorText(xName, yPos, foreground, (function () if marketSellersList then return "ПРОДАВЕЦ" else return "ПРЕДМЕТ" end end)())
+		ecs.colorText(xCountOrSeller, yPos, foreground, "КОЛИЧЕСТВО")
+		ecs.colorText(xPrice, yPos, foreground, "ЦЕНА")
 
 		yPos = yPos + 2
 
@@ -891,7 +891,7 @@ local function buy()
 		if marketSellersList then
 
 			gpu.setForeground(0xFFFFFF)
-			ecs.centerText("x", yPos, "List object sellers \"" .. currentID .. " " .. currentData .. "\"")
+			ecs.centerText("x", yPos, "Список продавцов предмета \"" .. currentID .. " " .. currentData .. "\"")
 			yPos = yPos + 2
 
 			yPos = infoPanel(yPos)
@@ -904,13 +904,13 @@ local function buy()
 				if itemMarketArray[i] then
 					ecs.square(xPos, yPos, xSize - 7, 3, 0xFFFFFF)
 					ecs.colorText(xPos + 2, yPos + 1, 0x000000, itemMarketArray[i].nickname )
-					gpu.set(xCountOrSeller, yPos + 1, tostring(itemMarketArray[i].count) .. " PC.")
-					gpu.set(xPrice, yPos + 1, tostring(itemMarketArray[i].price) .. moneySymbol ..  " per Unit.")
+					gpu.set(xCountOrSeller, yPos + 1, tostring(itemMarketArray[i].count) .. " шт.")
+					gpu.set(xPrice, yPos + 1, tostring(itemMarketArray[i].price) .. moneySymbol ..  " за шт.")
 
 					if itemMarketArray[i].price > massivWithProfile.money or itemMarketArray[i].nickname == massivWithProfile.nickname then
-						ecs.drawAdaptiveButton(xSize - 13, yPos, 2, 1, "Buy", 0xBBBBBB, 0xFFFFFF)
+						ecs.drawAdaptiveButton(xSize - 13, yPos, 2, 1, "Купить", 0xBBBBBB, 0xFFFFFF)
 					else
-						newObj("BuyButtons", i, ecs.drawAdaptiveButton(xSize - 13, yPos, 2, 1, "Buy", 0x66b6ff, 0xFFFFFF))
+						newObj("BuyButtons", i, ecs.drawAdaptiveButton(xSize - 13, yPos, 2, 1, "Купить", 0x66b6ff, 0xFFFFFF))
 					end
 
 					yPos = yPos + 4
@@ -929,8 +929,8 @@ local function buy()
 				if filteredMakretArray[i] then
 					ecs.square(xPos, yPos, xSize - 7, 3, 0xFFFFFF)
 					ecs.colorText(xPos + 2, yPos + 1, 0x000000, filteredMakretArray[i].label)
-					gpu.set(xCountOrSeller, yPos + 1, tostring(filteredMakretArray[i].count) .. " PC.")
-					gpu.set(xPrice, yPos + 1, "From " .. tostring(filteredMakretArray[i].price) .. moneySymbol ..  " per Unit.")
+					gpu.set(xCountOrSeller, yPos + 1, tostring(filteredMakretArray[i].count) .. " шт.")
+					gpu.set(xPrice, yPos + 1, "От " .. tostring(filteredMakretArray[i].price) .. moneySymbol ..  " за шт.")
 
 					newObj("BuyItems", i, xPos, yPos, xPos + xSize - 7 , yPos + 2)
 
@@ -972,16 +972,16 @@ local function buy()
 			if obj["BuyButtons"] then
 				for key in pairs(obj["BuyButtons"]) do
 					if ecs.clickedAtArea(e[3], e[4], obj["BuyButtons"][key][1], obj["BuyButtons"][key][2], obj["BuyButtons"][key][3], obj["BuyButtons"][key][4]) then
-						ecs.drawAdaptiveButton(obj["BuyButtons"][key][1], obj["BuyButtons"][key][2], 2, 1, "Buy", 0xFF4940, 0xFFFFFF)
+						ecs.drawAdaptiveButton(obj["BuyButtons"][key][1], obj["BuyButtons"][key][2], 2, 1, "Купить", 0xFF4940, 0xFFFFFF)
 						
 						local skokaMozhnaKupit = math.min(itemMarketArray[key].count, math.floor(massivWithProfile.money / (itemMarketArray[key].price + round(itemMarketArray[key].price * comissionMultiplyer))))
 
-						local text = "Summary of purchase: You can buy a maximum of " .. skokaMozhnaKupit .. " pieces. The rules of the user agreement: pressing \"Buy\", you get the specified number of items on the optimally chosen price. The system will automatically find the most profitable items, and will transfer your money to the seller. Then, the specified number of objects will be immediately sent to you in digital equipment. Author of this program is not responsible for the loss of cash due to any external influences on the computer. You decide to trust a similar service or not."
+						local text = "Сводка по покупке: вы можете купить максимум " .. skokaMozhnaKupit .. " штук. Правила пользовательского соглашения: нажимая кнопку \"Купить\", вы получаете указанное количество предметов по оптимально подобранной цене. Система автоматически найдет наиболее выгодные лоты и перечислит ваши деньги продавцам. Затем указанное количество предметов будет немедленно передано вам в цифровой инвентарь. Автор программы не несет ответственности за утерю наличности из-за любых внешних воздействий на компьютер. Вы сами решаете, доверять подобным сервисам или нет."
 
-						local data = ecs.universalWindow("auto", "auto", 40, 0xDDDDDD, true, {"EmptyLine"}, {"CenterText", 0x262626, "How much do you want to buy?"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 1, skokaMozhnaKupit, 1, "", " PC."}, {"EmptyLine"}, {"TextField", 6, 0xFFFFFF, 0x262626, 0xBBBBBB, ecs.colors.blue, text}, {"EmptyLine"}, {"Switch", 0x3366CC, 0xffffff, 0x262626, "With the terms of the above agreement", true}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Buy"}})
+						local data = ecs.universalWindow("auto", "auto", 40, 0xDDDDDD, true, {"EmptyLine"}, {"CenterText", 0x262626, "Сколько вы желаете купить?"}, {"EmptyLine"}, {"Slider", 0x262626, 0x880000, 1, skokaMozhnaKupit, 1, "", " шт."}, {"EmptyLine"}, {"TextField", 6, 0xFFFFFF, 0x262626, 0xBBBBBB, ecs.colors.blue, text}, {"EmptyLine"}, {"Switch", 0x3366CC, 0xffffff, 0x262626, "С условиями выше согласен", true}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "Купить"}})
 
 						if not data[2] then
-							ecs.universalWindow("auto", "auto", 40, 0xDDDDDD, true, {"EmptyLine"}, {"CenterText", 0x262626, "To purchase necessary to take"}, {"CenterText", 0x262626, "Terms of Service."}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "OK"}})
+							ecs.universalWindow("auto", "auto", 40, 0xDDDDDD, true, {"EmptyLine"}, {"CenterText", 0x262626, "Для покупки необходимо принять"}, {"CenterText", 0x262626, "условия пользовательского соглашения."}, {"EmptyLine"}, {"Button", {0x33db80, 0xffffff, "OK"}})
 						else
 							buyFromSeller(currentID, currentData, key, data[1])
 						end
@@ -1022,7 +1022,7 @@ end
 
 local function main()
 	--Рисуем топбар
-	ecs.drawTopBar(1, 1, xSize, currentMode, colors.topbar, colors.topbarText, {"home", "🏠"}, {"Buy", "⟱"}, {"Sell", "⟰"}, {"Lottery", "☯"}, {"My profile", moneySymbol})
+	ecs.drawTopBar(1, 1, xSize, currentMode, colors.topbar, colors.topbarText, {"Главная", "🏠"}, {"Купить", "⟱"}, {"Продать", "⟰"}, {"Лотерея", "☯"}, {"Мой профиль", moneySymbol})
 	--Рисуем данные о юзере справа вверху
 	local text = "§f" .. massivWithProfile.nickname .. "§7, " .. massivWithProfile.money .. moneySymbol
 	ecs.smartText(xSize - unicode.len(text) + 3, 2, text)
