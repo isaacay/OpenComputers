@@ -543,15 +543,6 @@
     ["version"]=1.0,
   },
   {
-    ["name"]="MineOS/Applications/QuantumCube",
-    ["url"]="isaacay/OpenComputers/master/Applications/QuantumCube/QuantumCube.lua",
-    ["about"]="isaacay/OpenComputers/master/Applications/QuantumCube/About.txt",
-    ["type"]="Application",
-    ["icon"]="isaacay/OpenComputers/master/Applications/QuantumCube/Icon.pic",
-    ["createShortcut"]="desktop",
-    ["version"]=1.0,
-  },
-  {
     ["name"]="MineOS/Applications/Photoshop",
     ["url"]="isaacay/OpenComputers/master/Applications/Photoshop/Photoshop.lua",
     ["about"]="isaacay/OpenComputers/master/Applications/Photoshop/About.txt",
