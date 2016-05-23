@@ -1,1 +1,1 @@
-﻿An application designed to manage the turrets of fashion OpenModularTurrets.
+Приложение, предназначенное для управления турелями из мода OpenModularTurrets.

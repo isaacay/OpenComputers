@@ -31,11 +31,11 @@ function robotAPI.move(direction)
 		if success then
 			return
 		else
-			print("I can not move " .. direction .. ": " .. reason)
+			print("Не могу двигаться " .. direction .. ": " .. reason)
 		end
 		tries = tries + 1
 	end
-	error("Number of attempts to move " .. direction .. " exhausted, the program is completed")
+	error("Количество попыток перемещения " .. direction .. " исчерпано, программа завершена")
 end
 
 function robotAPI.dropShmot()

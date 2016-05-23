@@ -8,8 +8,8 @@ local args = {...}
 
 local function printUsage()
   print(" ")
-  print("Using:")
-  print(" reload <path to file> - resets the file GitHub author")
+  print(" Использование:")
+  print(" reload <путь к файлу> - перезагружает файл с GitHub автора")
   print(" ")
 end
 
@@ -35,7 +35,7 @@ end
 local function reloadFromGitHub(url, name)
   github.get("https://raw.githubusercontent.com/" .. url, name)
   print(" ")
-  print("File " .. name .. " restart of https://raw.githubusercontent.com/" .. url)
+  print("Файл " .. name .. " перезагружен из https://raw.githubusercontent.com/" .. url)
   print(" ")
 end
 
@@ -43,6 +43,6 @@ end
 
 if #args < 1 then printUsage(); return end
 local url = getGitHubUrl(args[1])
-if not url then print(" "); io.stderr:write("On GitHub author is not specified file."); print(" ") end
+if not url then print(" "); io.stderr:write("На GitHub автора отсутствует указанный файл."); print(" ") end
 
 reloadFromGitHub(url, args[1])

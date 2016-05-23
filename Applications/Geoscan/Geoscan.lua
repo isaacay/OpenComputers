@@ -10,7 +10,7 @@ local args = {...}
 
 --Проверка на наличие нужных устройств
 if not c.isAvailable("geolyzer") or not c.isAvailable("hologram") then
-  ecs.error("Connect gemoanalizator and holographic projector 2nd level")
+  ecs.error("Подключите геоанализатор и голографический проектор 2-ого уровня")
   return
 else
   geo = c.geolyzer
@@ -114,8 +114,8 @@ local function scan()
       ecs.progressBar(xBar, yBar, barWidth, 1, 0xcccccc, ecs.colors.blue, percent)
       gpu.setForeground(0x444444)
       gpu.setBackground(0xffffff)
-      ecs.centerText("x", yBar + 1, "   Scan to stack x = "..x..", z = "..z.."   ")
-      ecs.centerText("x", yBar + 3, "   "..math.floor(percent).."% completed   ")
+      ecs.centerText("x", yBar + 1, "   Сканирование стека на x = "..x..", z = "..z.."   ")
+      ecs.centerText("x", yBar + 3, "   "..math.floor(percent).."% завершено   ")
       ecs.centerText("x", yBar + 2, "   "..getMemory().." RAM   ")
       counter = counter + 1
 
@@ -141,16 +141,16 @@ end
 local function main()
   ecs.clearScreen(0xffffff)
   local yPos = yCenter - 14
-  newObj("buttons", "Scan area", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Scan area", 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "Scale", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Scale", 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "Draw a hologram", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Draw a hologram", 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "+ 10 blocks", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "+ 10 blocks", 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "- 10 blocks", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "- 10 blocks", 0x444444, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "Change color", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Change color", currentHoloColor, 0xffffff)); yPos = yPos + 4
-  newObj("buttons", "Go out", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Go out", 0x666666, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "Сканировать местность", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Сканировать местность", 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "Масштаб", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Масштаб", 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "Перерисовать голограмму", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Перерисовать голограмму", 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "+ 10 блоков", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "+ 10 блоков", 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "- 10 блоков", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "- 10 блоков", 0x444444, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "Изменить цвет", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Изменить цвет", currentHoloColor, 0xffffff)); yPos = yPos + 4
+  newObj("buttons", "Выйти", ecs.drawAdaptiveButton("auto", yPos, 3, 1, "Выйти", 0x666666, 0xffffff)); yPos = yPos + 4
   gpu.setBackground(0xffffff)
   gpu.setForeground(0x444444)
-  ecs.centerText("x", yPos, "modifier height: "..yModifyer)
+  ecs.centerText("x", yPos, "Модификатор высоты: "..yModifyer)
 end
 
 ----------------------------
@@ -166,20 +166,20 @@ while true do
       if ecs.clickedAtArea(e[3], e[4], obj["buttons"][key][1], obj["buttons"][key][2], obj["buttons"][key][3], obj["buttons"][key][4]) then
         ecs.drawAdaptiveButton(obj["buttons"][key][1], obj["buttons"][key][2], 3, 1, key, ecs.colors.green, 0xffffff)
         os.sleep(0.3)
-        if key == "Scan area" then
+        if key == "Сканировать местность" then
           scan()
-        elseif key == "Scale" then
+        elseif key == "Масштаб" then
           changeScale()
-        elseif key == "Draw a hologram" then
+        elseif key == "Перерисовать голограмму" then
           displayAllRows()
-        elseif key == "+ 10 blocks" then
+        elseif key == "+ 10 блоков" then
           yModifyer = yModifyer - 10
-        elseif key == "- 10 blocks" then
+        elseif key == "- 10 блоков" then
           yModifyer = yModifyer + 10
-        elseif key == "Go out" then
+        elseif key == "Выйти" then
           ecs.prepareToExit()
           return 0
-        elseif key == "Change color" then
+        elseif key == "Изменить цвет" then
           local color = palette.draw("auto", "auto", currentHoloColor)
           if color ~= nil then
             changeColorTo(color)

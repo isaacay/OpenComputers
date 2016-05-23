@@ -12,7 +12,7 @@ modem.open(port)
 
 --Запрашиваем адрес клиента
 local clientAddress = "3659a020-b21d-4993-aa79-1d8acd5110f3"
-local data = ecs.universalWindow("auto", "auto", 40, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "RCON"}, {"EmptyLine"}, {"CenterText", 0x262626, "Enter the address of the remote computer:"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, clientAddress}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Next"}})
+local data = ecs.universalWindow("auto", "auto", 40, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "RCON"}, {"EmptyLine"}, {"CenterText", 0x262626, "Введите адрес удаленного компьютера:"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, clientAddress}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Далее"}})
 clientAddress = data[1]
 
 local oldPixels = ecs.info("auto", "auto", " ", "Connecting to client...")
@@ -35,10 +35,10 @@ ecs.drawOldPixels(oldPixels)
 
 --Проверяем, че там и как
 if controlAccepted == 2 then
-	ecs.error("The client rejected the management!")
+	ecs.error("Клиент отклонил управление!")
 	return
 elseif controlAccepted == nil then
-	ecs.error("The client did not accept the request, disconnects.")
+	ecs.error("Клиент не принял запрос, отключаюсь.")
 	return
 end
 
@@ -49,16 +49,16 @@ end
 
 --Для окошечка все
 local commandsHistory = {
-	"Welcome to the RCON-client OpenComputers!",
+	"Добро пожаловать в RCON-клиент для OpenComputers!",
 	" ",
-	"Press any key - the same key is pressed on",
-	"remote computer.",
+	"Нажмите любую клавишу - и эта же клавиша нажмется на",
+	"удаленном компьютере.",
 	" ",
-	"Click on the screen - and the remote computer and clicks",
-	"at the same point.",
+	"Кликните на экран - и удаленный компьютер также кликнет",
+	"в эту же точку.",
 	" ",
-	"Enter the following command in the command line below - and this team",
-	"run on a remote PC via shell.execute ()",
+	"Введите команду в командную строку ниже - и эта команда",
+	"выполнится на удаленном ПК через shell.execute()",
 	" ",
 	"----------------------------------------------------------------",
 	" ",
@@ -113,13 +113,13 @@ while true do
 	local e = {event.pull()}
 	if e[1] == "key_down" then
 		RCONExecute("key_down", e[3], e[4], e[5])
-		insertToHistory("press \""..unicode.char(e[3]).."\" on behalf of "..e[5])
+		insertToHistory("Нажать клавишу \""..unicode.char(e[3]).."\" от имени "..e[5])
 	elseif e[1] == "touch" then
 		--Если в комманд зону
 		if ecs.clickedAtArea(e[3], e[4], x + 2, yEnd - 1, xEnd - 2, yEnd - 1) then
 			local cmd = ecs.inputText(x + 3, yEnd - 1, width - 6, "", 0xeeeeee, 0x262626)
 			RCONExecute("execute", cmd)
-			insertToHistory("Run \""..cmd.."\"")
+			insertToHistory("Выполнить \""..cmd.."\"")
 		elseif ecs.clickedAtArea(e[3], e[4], x + 1, y, x + 2, y) then
 			ecs.colorTextWithBack(x + 1, y, ecs.colors.blue, 0xeeeeee, "⮾")
 			os.sleep(0.2)
@@ -128,7 +128,7 @@ while true do
 			return
 		else
 			RCONExecute("touch", e[3], e[4], e[5], e[6])
-			insertToHistory("Click on the screen to position "..tostring(e[3]).."x"..tostring(e[4]).." mouse button "..tostring(e[5]).." on behalf of "..tostring(e[6]))
+			insertToHistory("Кликнуть на экран на позиции "..tostring(e[3]).."x"..tostring(e[4]).." клавишей мыши "..tostring(e[5]).." от имени "..tostring(e[6]))
 		end
 	end
 end

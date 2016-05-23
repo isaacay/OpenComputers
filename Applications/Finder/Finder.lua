@@ -500,7 +500,7 @@ while true do
 						getFileList(workPathHistory[currentWorkPathHistoryElement])
 						drawAll()
 					elseif action == lang.contextMenuArchive then
-						ecs.info("auto", "auto", "", "Back up files...")
+						ecs.info("auto", "auto", "", "Архивация файлов...")
 						archive.pack(ecs.hideFileFormat(fs.name(path))..".pkg", path)
 						getFileList(workPathHistory[currentWorkPathHistoryElement])
 						drawAll()

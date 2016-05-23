@@ -1,1 +1,1 @@
-﻿Popular game "Battleship" written with fellow Nezn offline ComputerCraft.ru. Designed for single-player, you will be an exciting battle with the enemy fleet controlled by the AI on Lua.
+Популярная игра "Морской бой", написанная товарищем Nezn с форума ComputerCraft.ru. Рассчитана на одного игрока, вам предстоит захватывающее сражение с флотом противника, контролируемым ИИ на Lua.

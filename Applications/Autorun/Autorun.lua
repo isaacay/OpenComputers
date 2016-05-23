@@ -75,9 +75,9 @@ local function drawFiles(x, y)
 	ecs.square(x, y, dataWidth, dataHeight, 0xFFFFFF)
 	ecs.square(x, y, dataWidth, 1, ecs.colors.blue)
 	gpu.setForeground(0xFFFFFF)
-	gpu.set(x + 1, y, "launch")
-	gpu.set(x + 9, y, "File")
-	gpu.set(x + 48, y, "The size")
+	gpu.set(x + 1, y, "Запуск")
+	gpu.set(x + 9, y, "Файл")
+	gpu.set(x + 48, y, "Размер")
 
 	ecs.srollBar(x + dataWidth - 1, yPos, 1, dataHeight - 1, #autorunObjects == 0 and from or #autorunObjects, from, 0xCCCCCC, ecs.colors.lightBlue)
 
@@ -119,27 +119,27 @@ local function drawWindow()
 	xPos = x + 3
 	yPos = y + 4
 
-	ecs.colorText(xPos, yPos, 0x262626, "These objects will automatically start at boot:")
+	ecs.colorText(xPos, yPos, 0x262626, "Эти объекты будут запускаться автоматически при загрузке:")
 	yPos = yPos + 2
 
 	ecs.square(x, y, width, 3, 0xCCCCCC)
 
-	ecs.centerText("x", y + 1, "startup Manager")
+	ecs.centerText("x", y + 1, "Менеджер автозагрузки")
 
 	drawFiles(x + 3, y + 6)
 
 	yPos = y + height - 7
-	ecs.colorTextWithBack(xPos, yPos, 0x262626, 0xDDDDDD, "To disable file downloading, remove the check mark next to the name")
+	ecs.colorTextWithBack(xPos, yPos, 0x262626, 0xDDDDDD, "Чтобы отключить загрузку файла, снимите галочку рядом с именем")
 	yPos = yPos + 1
-	gpu.set(xPos, yPos, "programs. Boot priority decreases from top to bottom.")
+	gpu.set(xPos, yPos, "программы. Приоритет загузки снижается сверху вниз.")
 	yPos = yPos + 2
 
 	local name
 	name = "+"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
 	name = "-"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
 
-	name = "Higher"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
-	name = "lower"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
+	name = "Выше"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
+	name = "Ниже"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xFFFFFF, 0x262626)); xPos = obj["Buttons"][name][3] + 2
 	-- if fs.isAutorunEnabled() then
 	-- 	name = "Выключить автозапуск"
 	-- else
@@ -148,7 +148,7 @@ local function drawWindow()
 	-- newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0xAAAAAA, 0xFFFFFF)); xPos = obj["Buttons"][name][3] + 2
 
 	xPos = x + width - 12
-	name = "Exit"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0x888888, 0xFFFFFF))
+	name = "Выход"; newObj("Buttons", name, ecs.drawAdaptiveButton(xPos, yPos, 2, 1, name, 0x888888, 0xFFFFFF))
 end
 
 ------------------------------------------ Программа ---------------------------------------------------------------
@@ -191,8 +191,8 @@ while true do
 					saveList()
 					saveAutorun()
 				elseif key == "+" then
-					local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Add a new file"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "The path to the file"}, {"EmptyLine"}, {"Button", {0x888888, 0xffffff, "Add"}, {0xAAAAAA, 0xffffff, "Cancel"}})
-					if data[2] == "Add" then
+					local data = ecs.universalWindow("auto", "auto", 36, 0xeeeeee, true, {"EmptyLine"}, {"CenterText", 0x880000, "Добавить новый файл"}, {"EmptyLine"}, {"Input", 0x262626, 0x880000, "Путь к файлу"}, {"EmptyLine"}, {"Button", {0x888888, 0xffffff, "Добавить"}, {0xAAAAAA, 0xffffff, "Отмена"}})
+					if data[2] == "Добавить" then
 						if fs.exists(data[1]) then
 							local cyka = false
 							for i = 1, #autorunObjects do
@@ -204,13 +204,13 @@ while true do
 								saveList()
 								saveAutorun()
 							else
-								ecs.error("File \"" .. data[1] .. "\" is already in the list!")
+								ecs.error("Файл \"" .. data[1] .. "\" уже есть в этом списке!")
 							end
 						else
-							ecs.error("File \"" .. data[1] .. "\" does not exist!")
+							ecs.error("Файл \"" .. data[1] .. "\" не существует!")
 						end
 					end
-				elseif key == "Higher" then
+				elseif key == "Выше" then
 					if selectedObject > 1 then
 						local cyka = autorunObjects[selectedObject]
 						table.remove(autorunObjects, selectedObject)
@@ -220,7 +220,7 @@ while true do
 						saveList()
 						saveAutorun()
 					end
-				elseif key == "lower" then
+				elseif key == "Ниже" then
 					if selectedObject < #autorunObjects then
 						local cyka = autorunObjects[selectedObject]
 						table.remove(autorunObjects, selectedObject)
@@ -230,7 +230,7 @@ while true do
 						saveList()
 						saveAutorun()
 					end
-				elseif key == "Exit" then
+				elseif key == "Выход" then
 					ecs.drawOldPixels(oldPixels)
 					return
 				-- elseif key == "Включить автозапуск " then

@@ -1,1 +1,1 @@
-﻿Control - a program that allows you to find all the necessary information about your computer, allows you to manipulate the hard drive, format it, change its name and so on.
+Control - программа, позволяющая узнать всю необходимую информацию о данном компьютере, позволяет манипулировать жесткими дисками, форматировать их, изменять их имя и прочее.

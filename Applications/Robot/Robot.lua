@@ -16,7 +16,7 @@ local xStart = math.floor(buffer.screen.width / 2)
 local yStart = math.floor(buffer.screen.height / 2 + 2)
 local port = 1337
 
-local topBarElements = { "Map", "script", "equipment", "Redstone", "Gemoanalizator", "tank" }
+local topBarElements = { "Карта", "Скрипт", "Инвентарь", "Редстоун", "Геоанализатор", "Бак" }
 local currentTopBarElement = 1
 
 local drawInventoryFrom = 1
@@ -26,7 +26,7 @@ local map = {
 	robot = {
 		x = 0, y = 0, z = 0,
 		rotation = 1,
-		status = "Expectation",
+		status = "Ожидание",
 		energy = 1,
 		maxEnergy = 1,
 		redstone = {
@@ -258,7 +258,7 @@ local function drawInventory()
 						drawMultiColorProgressBar(xPos + 1, yPos + 3, 6, map.robotInventory[i].damage, map.robotInventory[i].maxDamage)
 					end
 				else
-					buffer.text(xPos + 1, yPos + 1, colors.lightGray, "Empty")
+					buffer.text(xPos + 1, yPos + 1, colors.lightGray, "Пусто")
 				end
 
 				xPos = xPos + 10
@@ -267,10 +267,10 @@ local function drawInventory()
 				if counter > 16 then break end
 			end
 		else
-			drawCloud(x, y, inventoryWidth, inventoryHeight + 1, "Where equipment, bitch? Who is responsible?")
+			drawCloud(x, y, inventoryWidth, inventoryHeight + 1, "Где инвентарь, сука? Кто ответственный?")
 		end
 	else
-		drawCloud(x, y, inventoryWidth, inventoryHeight + 1, "Asks the robot inventory array")
+		drawCloud(x, y, inventoryWidth, inventoryHeight + 1, "Запрашиваю у робота массив инвентаря")
 	end
 
 	--Рисуем выбор типа инвентаря
@@ -375,11 +375,11 @@ local function drawMain()
 	--Очищаем главную зону
 	buffer.square(1, 4, buffer.screen.width, buffer.screen.height - 3, colors.lightGray)
 
-	if topBarElements[currentTopBarElement] == "Map" then
+	if topBarElements[currentTopBarElement] == "Карта" then
 		drawMap()
-	elseif topBarElements[currentTopBarElement] == "Inventory" then
+	elseif topBarElements[currentTopBarElement] == "Инвентарь" then
 		drawInventory()
-	elseif topBarElements[currentTopBarElement] == "Redstone" then
+	elseif topBarElements[currentTopBarElement] == "Редстоун" then
 		drawRedstone()
 	end
 end
@@ -446,7 +446,7 @@ while true do
 	local e = { event.pull() }
 	if e[1] == "touch" then
 		--СОздание ключевых точек
-		if e[4] >= 4 and topBarElements[currentTopBarElement] == "Map" then
+		if e[4] >= 4 and topBarElements[currentTopBarElement] == "Карта" then
 		 	map.keyPoints = map.keyPoints or {}
 		 	table.insert(map.keyPoints, { x = e[3] - xStart, y = map.currentLayer, z = e[4] - yStart })
 		 	drawAll()
@@ -459,12 +459,12 @@ while true do
 
 	 			requestInfoAboutRobot()
 	 			
-	 			if topBarElements[currentTopBarElement] == "Inventory" then
+	 			if topBarElements[currentTopBarElement] == "Инвентарь" then
 	 				map.robotInventory = nil
 	 				currentInventoryType = "internal";
 	 				drawInventoryFrom = 1
 	 				requestInfoAboutInventory()
-	 			elseif topBarElements[currentTopBarElement] == "Redstone" then
+	 			elseif topBarElements[currentTopBarElement] == "Редстоун" then
 	 				sendRedstoneRequest()
 	 			end 
 
@@ -474,7 +474,7 @@ while true do
 	 	end
 
 	 	--Редстоун
-	 	if topBarElements[currentTopBarElement] == "Redstone" then
+	 	if topBarElements[currentTopBarElement] == "Редстоун" then
 	 		if obj.Redstone then
 		 		for key in pairs(obj.Redstone) do
 		 			if clicked(e[3], e[4], obj.Redstone[key]) then
@@ -508,7 +508,7 @@ while true do
 		 end
 
 	 	--Выбор слотов
-	 	if topBarElements[currentTopBarElement] == "Inventory" then
+	 	if topBarElements[currentTopBarElement] == "Инвентарь" then
 	 		--Тип инвентаря
 	 		if obj.InventoryTypeSelectors then
 		 		for key in pairs(obj.InventoryTypeSelectors) do
@@ -533,16 +533,16 @@ while true do
 			 			else
 			 				if currentInventoryType == "internal" then
 				 				if map.robotInventory[key] then
-					 				local action = context.menu(e[3], e[4], {"Equip"}, {"Throw"}, "-", {"info", true})
-					 				if action == "Equip" then
+					 				local action = context.menu(e[3], e[4], {"Экипировать"}, {"Выбросить"}, "-", {"Инфо", true})
+					 				if action == "Экипировать" then
 					 					sendMessage("equip", key)
-					 				elseif action == "Throw" then
+					 				elseif action == "Выбросить" then
 					 					sendMessage("drop", nil, key)
 					 				end
 					 			end
 				 			else
-				 				local action = context.menu(e[3], e[4], {"nap", map.robotInventory[key] == nil}, {"Put Court", map.robotInventory[key] ~= nil}, "-", {"info", true})
-				 				if action == "nap" then
+				 				local action = context.menu(e[3], e[4], {"Соснуть", map.robotInventory[key] == nil}, {"Положить суда", map.robotInventory[key] ~= nil}, "-", {"Инфо", true})
+				 				if action == "Соснуть" then
 				 					sendMessage("suckFromSlot", currentInventoryType, key)
 				 				end
 				 			end
@@ -554,7 +554,7 @@ while true do
 		 	end
 		 end
 	elseif e[1] == "key_down" then
-		if topBarElements[currentTopBarElement] == "Map" then
+		if topBarElements[currentTopBarElement] == "Карта" then
 			--W
 			if e[4] == 17 then
 				sendMessage("forward")
@@ -625,20 +625,20 @@ while true do
 					drawAll()
 				elseif e[7] == "selectedSlot" then
 					map.robotInventory.currentSlot = e[8]
-					if topBarElements[currentTopBarElement] == "Inventory" then drawAll() end
+					if topBarElements[currentTopBarElement] == "Инвентарь" then drawAll() end
 				elseif e[7] == "infoAboutRobot" then
 					map.robot.energy = e[8]
 					map.robot.maxEnergy = e[9]
 					map.robot.status = e[10]
-					if topBarElements[currentTopBarElement] == "Map" then drawRobotStatus(); buffer.draw() end
+					if topBarElements[currentTopBarElement] == "Карта" then drawRobotStatus(); buffer.draw() end
 				elseif e[7] == "infoAboutRedstone" then
 					map.robot.redstone = serialization.unserialize(e[8])
-					if topBarElements[currentTopBarElement] == "Redstone" then drawAll() end
+					if topBarElements[currentTopBarElement] == "Редстоун" then drawAll() end
 				end
 			end
 		end
 	elseif e[1] == "scroll" then
-		if topBarElements[currentTopBarElement] == "Inventory" then
+		if topBarElements[currentTopBarElement] == "Инвентарь" then
 			if e[5] == 1 then
 				if drawInventoryFrom > 4 then drawInventoryFrom = drawInventoryFrom - 4; drawAll() end
 			else

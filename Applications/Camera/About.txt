@@ -1,1 +1,1 @@
-﻿Program-reykaster, take pictures with the camera area of fashion Computronix. Of course, this mode should be set to work.
+Программа-рейкастер, делающая снимки местности с помощью камеры из мода Computronix. Разумеется, данный мод должен быть установлен для работы.

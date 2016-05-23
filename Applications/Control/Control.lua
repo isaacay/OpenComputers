@@ -21,7 +21,7 @@ local colors = {
 	topButtonsText = 0x262626,
 }
 
-local topButtons = {"About system", "Disks"}
+local topButtons = {"О системе", "Диски"}
 local spaceBetweenTopButtons, offsetTopButtons = 2, 2
 local currentMode = 1
 
@@ -112,7 +112,7 @@ local function drawUpdatesList()
 			countOfChoses = countOfChoses + 1
 		end
 		--Имя проги
-		local text = "§f" .. (fs.name(updates[i].name) or updates[i].name) .. (function() if updates[i].needToUpdate then return "§e, version ".. updates[i].version .." (newer)" else return "§8, version ".. updates[i].version end end)()
+		local text = "§f" .. (fs.name(updates[i].name) or updates[i].name) .. (function() if updates[i].needToUpdate then return "§e, версия ".. updates[i].version .." (новее)" else return "§8, версия ".. updates[i].version end end)()
 		ecs.smartText(xPos + 6, yPos + 1, ecs.stringLimit("end", text, limit))
 		text = nil
 
@@ -132,13 +132,13 @@ local function drawMain()
 		image.draw(xPos, yPos, osIcon)
 		xPos, yPos = x + 36, yPos + 3
 		ecs.colorTextWithBack(xPos, yPos, 0x000000, colors.main, "MineOS"); yPos = yPos + 1
-		ecs.colorText(xPos, yPos, ecs.colors.lightGray, "The public beta version 1.75"); yPos = yPos + 2
+		ecs.colorText(xPos, yPos, ecs.colors.lightGray, "Публичная бета-версия 1.75"); yPos = yPos + 2
 
-		ecs.smartText(xPos, yPos, "§fSystem unit §8 (3 level, 2016)"); yPos = yPos + 1
-		ecs.smartText(xPos, yPos, "§fProcessor §8 (3 level, ? GHz))"); yPos = yPos + 1
-		ecs.smartText(xPos, yPos, "§fMemory §8 (4266MHz DDR4 "..ram.total.." KB)"); yPos = yPos + 1
-		ecs.smartText(xPos, yPos, "§fGraphics §8 (NVidia GTX 1080 Founders Addition)"); yPos = yPos + 1
-		ecs.smartText(xPos, yPos, "§fSerial number §8"..ecs.stringLimit("end", computer.address(), 30)); yPos = yPos + 1
+		ecs.smartText(xPos, yPos, "§fСистемный блок §8(3 уровень, середина 2015 года)"); yPos = yPos + 1
+		ecs.smartText(xPos, yPos, "§fПроцессор §8(3 уровень, дохуя GHz)"); yPos = yPos + 1
+		ecs.smartText(xPos, yPos, "§fПамять §8(1333 МГц DDR3 "..ram.total.." KB)"); yPos = yPos + 1
+		ecs.smartText(xPos, yPos, "§fГрафика §8(GTX Titan AnaloRazrivatel mk.3000)"); yPos = yPos + 1
+		ecs.smartText(xPos, yPos, "§fСерийный номер §8"..ecs.stringLimit("end", computer.address(), 30)); yPos = yPos + 1
 	
 	elseif currentMode == 2 then
 		obj["HDDControls"] = {}
@@ -155,19 +155,19 @@ local function drawMain()
 			xPos = xPos + 10
 			gpu.setBackground(colors.main)
 			local load = ""
-			if bootAddress == HDDs[i].address then load = " §eloading§8," end
-			ecs.smartText(xPos, yPos, ecs.stringLimit("end", "§f" .. (HDDs[i].label or "Unnamed drive") .. "§8,"..load.." " .. HDDs[i].address, 58)); yPos = yPos + 2
+			if bootAddress == HDDs[i].address then load = " §eзагрузочный§8," end
+			ecs.smartText(xPos, yPos, ecs.stringLimit("end", "§f" .. (HDDs[i].label or "Безымянный диск") .. "§8,"..load.." " .. HDDs[i].address, 58)); yPos = yPos + 2
 			--Рисуем прогрессбар
 			local percent = math.ceil(HDDs[i].spaceUsed / HDDs[i].spaceTotal * 100)
 			ecs.progressBar(xPos, yPos, 50, 1, 0xdddddd, ecs.colors.blue, percent)
 			yPos = yPos + 1
-			ecs.colorTextWithBack(xPos + 10, yPos, 0xaaaaaa, colors.main, HDDs[i].spaceUsed.." of "..HDDs[i].spaceTotal.." KB used"); yPos = yPos + 1
+			ecs.colorTextWithBack(xPos + 10, yPos, 0xaaaaaa, colors.main, HDDs[i].spaceUsed.." из "..HDDs[i].spaceTotal.." KB использовано"); yPos = yPos + 1
 
 			ecs.separator(x, yPos, width - 1, colors.main, 0xdddddd)
 
 			--Рисуем кнопы
 			xPos, yPos = x + 67, yPos - 4
-			newObj("HDDControls", i, ecs.drawButton(xPos, yPos, 14, 3, "Control", ecs.colors.blue, 0xffffff))
+			newObj("HDDControls", i, ecs.drawButton(xPos, yPos, 14, 3, "Управление", ecs.colors.blue, 0xffffff))
 
 			yPos = yPos + 5
 		end
@@ -193,28 +193,28 @@ while true do
 		if currentMode == 2 then
 			for key in pairs(obj["HDDControls"]) do
 				if ecs.clickedAtArea(e[3], e[4], obj["HDDControls"][key][1], obj["HDDControls"][key][2], obj["HDDControls"][key][3], obj["HDDControls"][key][4]) then
-					ecs.drawButton(obj["HDDControls"][key][1], obj["HDDControls"][key][2], 14, 3, "Control", 0xdddddd, ecs.colors.blue)
-					local action = context.menu(obj["HDDControls"][key][1], obj["HDDControls"][key][2] + 3, {"Format"}, {"Change name"}, {"Install a boot"}, "-", {"Duplicate the OS on this disc"})
-					if action == "Format" then
-						local data = ecs.universalWindow("auto", "auto", 38, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "Attention!"}, {"EmptyLine"}, {"CenterText", 0x262626, "This action will clear the entire disk."}, {"CenterText", 0x262626, "Continue?"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Yes"}, {0x999999, 0xffffff, "No"}})
-						if data[1] ~= "No" then
+					ecs.drawButton(obj["HDDControls"][key][1], obj["HDDControls"][key][2], 14, 3, "Управление", 0xdddddd, ecs.colors.blue)
+					local action = context.menu(obj["HDDControls"][key][1], obj["HDDControls"][key][2] + 3, {"Форматировать"}, {"Изменить имя"}, {"Установить как загрузочный"}, "-", {"Сдублировать OS на этот диск"})
+					if action == "Форматировать" then
+						local data = ecs.universalWindow("auto", "auto", 38, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x880000, "Внимание!"}, {"EmptyLine"}, {"CenterText", 0x262626, "Данное действие очистит весь диск."}, {"CenterText", 0x262626, "Продолжить?"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "Да"}, {0x999999, 0xffffff, "Нет"}})
+						if data[1] ~= "Нет" then
 							ecs.formatHDD(HDDs[key].address)
 							drawMain()
 						end
-					elseif action == "Change name" then
-						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Change the name of the drive"}, {"EmptyLine"}, {"Input", 0x262626, 0x000000, HDDs[key].label or "Name"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK!"}})
+					elseif action == "Изменить имя" then
+						local data = ecs.universalWindow("auto", "auto", 30, ecs.windowColors.background, true, {"EmptyLine"}, {"CenterText", 0x262626, "Изменить имя диска"}, {"EmptyLine"}, {"Input", 0x262626, 0x000000, HDDs[key].label or "Имя"}, {"EmptyLine"}, {"Button", {0xbbbbbb, 0xffffff, "OK!"}})
 						if data[1] == "" or data[1] == " " then data[1] = "Untitled" end
 						ecs.setHDDLabel(HDDs[key].address, data[1])
 						drawMain()
-					elseif action == "Duplicate the OS on this disc" then
+					elseif action == "Сдублировать OS на этот диск" then
 						ecs.duplicateFileSystem(bootAddress, HDDs[key].address)
 						drawMain()
-					elseif action == "Install a boot" then
+					elseif action == "Установить как загрузочный" then
 						computer.setBootAddress(HDDs[key].address)
 						bootAddress = HDDs[key].address
 						drawMain()
 					end
-					ecs.drawButton(obj["HDDControls"][key][1], obj["HDDControls"][key][2], 14, 3, "Control", ecs.colors.blue, 0xffffff)
+					ecs.drawButton(obj["HDDControls"][key][1], obj["HDDControls"][key][2], 14, 3, "Управление", ecs.colors.blue, 0xffffff)
 					break
 				end
 			end

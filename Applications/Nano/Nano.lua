@@ -3,7 +3,7 @@ local event = require("event")
 local image = require("image")
 local ecs = require("ECSAPI")
 
-if not component.isAvailable("modem") then error("This program requires a wireless network card."); return end
+if not component.isAvailable("modem") then error("Этой программе требуется плата беспроводной сети."); return end
 
 local modem = component.modem
 local port1 = 1
@@ -16,7 +16,7 @@ gpu.setResolution(80, 25)
 ecs.prepareToExit(0xFFFFFF)
 
 local name, minHealth, maxHealth, minHunger, maxHunger, minPower, maxPower, experience
-local effects = "Effects: Not Available"
+local effects = "Эффекты: недоступно"
 
 local timing = 1
 
@@ -47,7 +47,7 @@ local function listener(_, _, _, _, _, header, command, ...)
 		maxPower = data[2]
 	elseif command == "effects" then
 		local cyka = data[1]
-		effects = "effects: " .. cyka
+		effects = "Эффекты: " .. cyka
 	end
 end
 event.listen("modem_message", listener)
@@ -58,7 +58,7 @@ local imageCyka = image.load("MineOS/System/OS/Icons/Steve.pic")
 image.draw(xFace, yFace, imageCyka)
 
 local function request()
-	local oldPixels = ecs.info("auto", "auto", " ", "It makes a request to the nanobots. Wait.")
+	local oldPixels = ecs.info("auto", "auto", " ", "Осуществляется запрос к нанороботам. Ждите.")
 	modem.broadcast(port1, "nanomachines", "getName"); os.sleep(timing)
 	--modem.broadcast(port1, "nanomachines", "getAge"); os.sleep(timing)
 	modem.broadcast(port1, "nanomachines", "getExperience"); os.sleep(timing)
@@ -73,16 +73,16 @@ local function redraw(x, y)
 	local xPos, yPos = x, y
 	local width = 35
 	ecs.square(xPos, yPos, 80, 8, 0xFFFFFF)
-	ecs.smartText(xPos, yPos, "§fName: §8" .. (name or "Not Available")); yPos = yPos + 1
-	ecs.smartText(xPos, yPos, "§fexperience: §8" .. (experience or "Not Available")); yPos = yPos + 2
+	ecs.smartText(xPos, yPos, "§fИмя: §8" .. (name or "недоступно")); yPos = yPos + 1
+	ecs.smartText(xPos, yPos, "§fОпыт: §8" .. (experience or "недоступно")); yPos = yPos + 2
 	ecs.progressBar(xPos, yPos, width, 1, 0xCCCCCC, ecs.colors.red, math.floor((minHealth or 0) / (maxHealth or 1) * 100))
-	ecs.adaptiveText(xPos + math.floor(width / 2) - 4, yPos, "Health", 0xFFFFFF); yPos = yPos + 2
+	ecs.adaptiveText(xPos + math.floor(width / 2) - 4, yPos, "Здоровье", 0xFFFFFF); yPos = yPos + 2
 	
 	if (maxHunger or 1) < 20 then maxHunger = 20 end
 	ecs.progressBar(xPos, yPos, width, 1, 0xCCCCCC, ecs.colors.green, math.floor((minHunger or 0) / (maxHunger or 1) * 100))
-	ecs.adaptiveText(xPos + math.floor(width / 2) - 3, yPos, "Hunger", 0xFFFFFF); yPos = yPos + 2
+	ecs.adaptiveText(xPos + math.floor(width / 2) - 3, yPos, "Голод", 0xFFFFFF); yPos = yPos + 2
 	ecs.progressBar(xPos, yPos, width, 1, 0xCCCCCC, ecs.colors.blue, math.floor((minPower or 0) / (maxPower or 1) * 100))
-	ecs.adaptiveText(xPos + math.floor(width / 2) - 8, yPos, "nanobots charge", 0xFFFFFF); yPos = yPos + 2
+	ecs.adaptiveText(xPos + math.floor(width / 2) - 8, yPos, "Заряд нанороботов", 0xFFFFFF); yPos = yPos + 2
 
 	xPos, yPos = xFace, yFace + 9
 	ecs.separator(1, yPos, 80, 0xFFFFFF, 0xCCCCCC)
@@ -103,16 +103,16 @@ local function redraw(x, y)
 	end
 	yPos = yPos + 4
 	xPos = 14
-	scan = {ecs.drawAdaptiveButton(xPos, yPos, 2, 1, "Scanning", 0x444444, 0xFFFFFF)}
-	toggle = {ecs.drawAdaptiveButton(scan[3] + 3, yPos, 2, 1, "Switch contacts", 0x444444, 0xFFFFFF)}
-	exit = {ecs.drawAdaptiveButton(toggle[3] + 3, yPos, 2, 1, "Go out", 0x444444, 0xFFFFFF)}
+	scan = {ecs.drawAdaptiveButton(xPos, yPos, 2, 1, "Сканирование", 0x444444, 0xFFFFFF)}
+	toggle = {ecs.drawAdaptiveButton(scan[3] + 3, yPos, 2, 1, "Переключить контакты", 0x444444, 0xFFFFFF)}
+	exit = {ecs.drawAdaptiveButton(toggle[3] + 3, yPos, 2, 1, "Выйти", 0x444444, 0xFFFFFF)}
 
 end
 
 local function switchContacts()
 	os.sleep(timing)
 	for i = 1, #contacts do
-		ecs.info("auto", "auto", " ", "Change "..i.." contact")
+		ecs.info("auto", "auto", " ", "Переключаю "..i.." контакт")
 		modem.broadcast(port1, "nanomachines", "setInput", i, contacts[i][1]); os.sleep(timing)
 	end
 end
@@ -132,21 +132,21 @@ while true do
 	end
 
 	if ecs.clickedAtArea(e[3], e[4], scan[1], scan[2], scan[3], scan[4]) then
-		ecs.drawAdaptiveButton(scan[1], scan[2], 2, 1, "Scanning", ecs.colors.red, 0xFFFFFF)
+		ecs.drawAdaptiveButton(scan[1], scan[2], 2, 1, "Сканирование", ecs.colors.red, 0xFFFFFF)
 		--os.sleep(0.3)
 		request()
 		ecs.prepareToExit(0xFFFFFF)
 		redraw(xInfo, yInfo)
 		image.draw(xFace, yFace, imageCyka)
 	elseif ecs.clickedAtArea(e[3], e[4], toggle[1], toggle[2], toggle[3], toggle[4]) then
-		ecs.drawAdaptiveButton(toggle[1], toggle[2], 2, 1, "Switch contacts", ecs.colors.red, 0xFFFFFF)
+		ecs.drawAdaptiveButton(toggle[1], toggle[2], 2, 1, "Переключить контакты", ecs.colors.red, 0xFFFFFF)
 		--os.sleep(0.3)
 		switchContacts()
 		ecs.prepareToExit(0xFFFFFF)
 		redraw(xInfo, yInfo)
 		image.draw(xFace, yFace, imageCyka)
 	elseif ecs.clickedAtArea(e[3], e[4], exit[1], exit[2], exit[3], exit[4]) then
-		ecs.drawAdaptiveButton(exit[1], exit[2], 2, 1, "Go out", ecs.colors.red, 0xFFFFFF)
+		ecs.drawAdaptiveButton(exit[1], exit[2], 2, 1, "Выйти", ecs.colors.red, 0xFFFFFF)
 		os.sleep(0.3)
 		event.ignore("modem_message", listener)
 		gpu.setResolution(oldX, oldY)

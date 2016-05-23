@@ -18,25 +18,25 @@ local function executeCommand(symbol)
 		robotAPI.move("forward")
 	elseif symbol == "r" then
 		robot.turnRight()
-		print("Turn right!")
+		print("Поворачиваюсь направо!")
 	elseif symbol == "l" then
 		robot.turnLeft()
-		print("Turn left!")
+		print("Поворачиваюсь налево!")
 	elseif symbol == "t" then
 		robot.turnAround()
-		print("Krrrrruuu by God!")
+		print("Крррррууу-гом!")
 	elseif symbol == "u" then
 		robotAPI.move("up")
-		print("I rise above!")
+		print("Поднимаюсь выше!")
 	elseif symbol == "d" then
 		robotAPI.move("down")
-		print("Falls below!")
+		print("Опускаюсь ниже!")
 	elseif symbol == "m" then
 		robotAPI.move("forward")
 		robot.swing()
-		print("I dig ahead!")
+		print("Копаю вперед!")
 	elseif symbol == "s" then
-		print("I dig ahead!", robot.swing())
+		print("Копаю впереди!", robot.swing())
 
 	--Вообще потная хуйня, но работает, епта!
 	elseif tonumber(symbol) ~= nil then
@@ -53,7 +53,7 @@ local function executeCommand(symbol)
 		end
 		startNumber = tonumber(startNumber)
 
-		print("I carry "..startNumber.." just click "..symbols[symbolcounter + counter])
+		print("Выполняю "..startNumber.." раз команду "..symbols[symbolcounter + counter])
 		for i = 1, startNumber do
 			executeCommand(symbols[symbolcounter + counter])
 		end
@@ -69,7 +69,7 @@ for i = 1, #commands do
 end
 
 print(" ")
-print("I began to work!")
+print("Начинаю работать!")
 print(" ")
 
 while symbolcounter <= #symbols do
@@ -78,5 +78,5 @@ while symbolcounter <= #symbols do
 end
 
 print(" ")
-print("Completed!")
+print("Работа завершена!")
 print(" ")

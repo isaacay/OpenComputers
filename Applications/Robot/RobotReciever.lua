@@ -24,7 +24,7 @@ local function try(functionName, successMessage, errorMessage)
 	if success then
 		sendMessage(successMessage, functionName)
 	else
-		print("Error try: " .. tostring(functionName) .. " " .. tostring(reason))
+		print("Ошибка try: " .. tostring(functionName) .. " " .. tostring(reason))
 		sendMessage(errorMessage, functionName, reason)
 	end
 	-- os.sleep(moveSleepDelay)
@@ -64,7 +64,7 @@ local function sendInventoryInfo(type)
 end
 
 local function sendInfoAboutRobot()
-	sendMessage("infoAboutRobot", computer.energy(), computer.maxEnergy(), "Status")
+	sendMessage("infoAboutRobot", computer.energy(), computer.maxEnergy(), "Статус")
 end
 
 local function sendInfoAboutRedstone()

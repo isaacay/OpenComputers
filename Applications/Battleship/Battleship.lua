@@ -66,7 +66,7 @@ g.setBackground(colors.gray)
 g.fill(1,1,w,1," ")
 term.setCursor(math.floor(w/2-6),1)
 g.setForeground(colors.white)
-term.write("sea fight")
+term.write("Морской Бой")
 g.setBackground(colors.black)
 term.setCursor(w-3,1)
 term.write("   ")
@@ -152,14 +152,14 @@ end
 function drawButton2()
 	g.setBackground(colors.pink)
 	term.setCursor(13, 11)
-	term.write("  Done  ")
+	term.write("  Готово  ")
 end
 
 --Кнопка рандома своих кораблей
 function drawButton()
 	g.setBackground(colors.lime)
 	term.setCursor(3, 11)
-	term.write("  Auto  ")
+	term.write("  Авто  ")
 end
 
 --Очищаем пустое место
@@ -175,7 +175,7 @@ drawButton()
 g.setBackground(colors.lightGray)
 g.setForeground(colors.black)
 term.setCursor(3,13)
-term.write("Set ships")
+term.write("Установите корабли")
 
 --Цикл для установки своих корабликов вручную
 local ship = 0
@@ -261,9 +261,9 @@ drawFieldE()
 g.setBackground(colors.lightGray)
 g.setForeground(colors.black)
 term.setCursor(3,13)
-term.write("Enemy          ")
+term.write("Противник          ")
 term.setCursor(25,13)
-term.write("You")
+term.write("Вы")
 g.setBackground(colors.magenta)
 g.fill(23, 3, 2, 10, " ")
 while playing do
@@ -319,10 +319,10 @@ while playing do
 				
 				if shots == 20 then
 					term.setCursor(20, 6)
-					term.write("Victory")
+					term.write("Победа")
 				elseif shotsE2 == 20 then
 					term.setCursor(18, 6)
-					term.write("Defeat")
+					term.write("Поражение")
 				end
 			end
 		elseif x > w-4 and x < w and y == 1 then

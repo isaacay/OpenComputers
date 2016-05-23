@@ -1,1 +1,1 @@
-﻿Program for working with nanobots. For her work requires a wireless card to send robots to messages, and you have to be almost close to the computer system unit.
+Программа для работы с нанороботами. Для ее работы требуется беспроводная карта, чтобы отсылать роботам сообщения, а также вы должны стоять практически вплотную к системному блоку компьютера.

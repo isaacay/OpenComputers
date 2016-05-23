@@ -1,1 +1,1 @@
-﻿The program shows a virtual keyboard. Useful stuff, if you want to restrict the user from interacting with a physical keyboard.
+Программа, показывающая виртуальную клавиатуру. Полезная штука, если необходимо ограничить пользователя от взаимодействия с физической клавиатурой.

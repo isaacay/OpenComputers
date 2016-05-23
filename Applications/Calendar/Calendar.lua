@@ -6,18 +6,18 @@ local gpu = component.gpu
 
 --Список месяцев
 local months = {
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Январь",
+  "Февраль",
+  "Март",
+  "Апрель",
+  "Май",
+  "Июнь",
+  "Июль",
+  "Август",
+  "Сентябрь",
+  "Октябрь",
+  "Ноябрь",
+  "Декабрь",
 }
 
 --Количество дней в месяцах
@@ -132,12 +132,12 @@ local constants = {
   ySpaceBetweenNumbers = 1,
   xSpaceBetweenMonths = 4,
   ySpaceBetweenMonths = 1,
-  currentYear = 2016,
-  currentMonth = 5,
-  currentDay = 22,
-  programYear = 2016,
-  programMonth = 5,
-  proramDay = 22,
+  currentYear = 2015,
+  currentMonth = 9,
+  currentDay = 26,
+  programYear = 2015,
+  programMonth = 1,
+  proramDay = 1,
   usualDayColor = 0x262626,
   weekendColor = 0x880000,
   backgroundColor = 0xEEEEEE,
@@ -167,7 +167,7 @@ local function drawMonth(x, y, firstDay, countOfDays, year, month)
   local startDrawing = false
   local separator = string.rep(" ", constants.xSpaceBetweenNumbers)
   ecs.colorText(x, y, constants.monthsColor, months[month])
-  ecs.colorText(x, y + 2, constants.dayNamesColor,"Mon"..separator.."Tues"..separator.."Wen"..separator.."Thu"..separator.."Fri"..separator.."Sat"..separator.."Sun")
+  ecs.colorText(x, y + 2, constants.dayNamesColor,"Пн"..separator.."Вт"..separator.."Ср"..separator.."Чт"..separator.."Пт"..separator.."Сб"..separator.."Вс")
   for j = 1, 6 do
     xPos = x
     for i = 1, 7 do
@@ -253,11 +253,11 @@ local function polu4itDenNedeliPervogoJanvarja(year, debug)
   end
 
   if debug then
-    print("Year: "..year)
-    print("Disparity in years: "..difference)
-    print("Number of leap: "..koli4estvoVisokosnih)
-    print("The shift by day: "..sdvig)
-    print("Day of the week: "..den)
+    print("Год: "..year)
+    print("Разница в годах: "..difference)
+    print("Кол-во високосных: "..koli4estvoVisokosnih)
+    print("Сдвиг по дням: "..sdvig)
+    print("День недели: "..den)
     print(" ")
   end
 
@@ -313,9 +313,9 @@ local function drawInfo()
   drawYear(xPos, yPos, constants.programYear)
   yPos = yPos + 6
 
-  local name = "Next year"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
-  name = "Last year"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
-  name = "Go out"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
+  local name = "Следующий год"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
+  name = "Предыдущий год"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
+  name = "Выйти"; newObj("Buttons", name, ecs.drawButton(xPos, yPos, 30, 3, name, 0xDDDDDD, 0x262626)); yPos = yPos + 4
 
 end
 
@@ -351,11 +351,11 @@ while true do
         ecs.drawButton(obj["Buttons"][key][1], obj["Buttons"][key][2], 30, 3, key, constants.weekendColor, constants.currentDayColor)
         os.sleep(0.2)
 
-        if key == "Next year" then
+        if key == "Следующий год" then
           constants.programYear = constants.programYear + 1
-        elseif key == "Last year" then
+        elseif key == "Предыдущий год" then
           constants.programYear = constants.programYear - 1
-        elseif key == "Go out" then
+        elseif key == "Выйти" then
           gpu.setResolution(xOld, yOld)
           ecs.prepareToExit()
           return

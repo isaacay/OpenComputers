@@ -4,7 +4,7 @@ local robotAPI = require("robotAPI")
 local inventory = component.inventory_controller
 
 local args = { ... }
-if #args < 2 then print(" "); print("Use: laser <length> <Width>"); print(" "); return end
+if #args < 2 then print(" "); print("Использование: laser <длина> <ширина>"); print(" "); return end
 
 local width = tonumber(args[2])
 local length = tonumber(args[1])
