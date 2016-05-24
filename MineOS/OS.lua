@@ -27,6 +27,10 @@ image = 'image',
 SHA2 = 'SHA2',
 }
 
+local components = {
+  gpu = "gpu",
+}
+
 for library in pairs(libraries) do if not _G[library] then _G[library] = require(libraries[library]) end end
 for comp in pairs(components) do if not _G[comp] then _G[comp] = _G.component[components[comp]] end end
 libraries, components = nil, nil
