@@ -103,7 +103,7 @@ local function readFile(path)
 		strings = {}
 		fileSize = math.floor(fs.size(path) / 1024)
 		file = io.open(path, "r")
-		for line in file:lines() do
+		for line in pairs(file:lines()) do
 			line = string.gsub(line, "	", string.rep(" ", indentationWidth))
 			maximumStringWidth = math.max(maximumStringWidth, unicode.len(line))
 			table.insert(strings, line)
