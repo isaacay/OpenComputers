@@ -102,7 +102,7 @@ local function readFile(path)
 		maximumStringWidth = 0
 		strings = {}
 		fileSize = math.floor(fs.size(path) / 1024)
-		local file = io.open(path, "r")
+		file = io.open(path, "r")
 		for line in file:lines() do
 			line = string.gsub(line, "	", string.rep(" ", indentationWidth))
 			maximumStringWidth = math.max(maximumStringWidth, unicode.len(line))
